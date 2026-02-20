@@ -334,13 +334,6 @@ transition: var(--transition);
 .blog-title:hover {
 color: var(--name-color);
 }
-.blog-title a {
-color: inherit;
-text-decoration: none;
-}
-.blog-title a:hover {
-color: var(--name-color);
-}
 /* Post Actions */
 .post-actions {
 position: absolute;
@@ -409,6 +402,7 @@ border-radius: 15px;
 font-size: 0.85rem;
 font-weight: 600;
 }
+/* Content Preview with More Lines */
 .blog-content {
 color: var(--text-color);
 margin-bottom: 20px;
@@ -416,10 +410,41 @@ line-height: 1.8;
 }
 .blog-content-preview {
 display: -webkit-box;
--webkit-line-clamp: 3;
+-webkit-line-clamp: 5;
 -webkit-box-orient: vertical;
 overflow: hidden;
 text-overflow: ellipsis;
+max-height: 150px;
+}
+/* Read More Button - Smaller Size */
+.read-more-btn {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+color: white;
+padding: 6px 18px;
+border-radius: 20px;
+text-decoration: none;
+font-weight: 600;
+transition: var(--transition);
+cursor: pointer;
+border: none;
+font-size: 0.85rem;
+margin-top: 12px;
+}
+.read-more-btn:hover {
+background: linear-gradient(135deg, var(--name-color), var(--primary-color));
+transform: translateX(5px);
+color: white;
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.read-more-btn i {
+transition: var(--transition);
+font-size: 0.75rem;
+}
+.read-more-btn:hover i {
+transform: translateX(3px);
 }
 .blog-image {
 width: 100%;
@@ -507,6 +532,35 @@ margin-bottom: 30px;
 background-color: var(--name-color);
 transform: translateX(-5px);
 color: white;
+}
+/* Move to All Posts Button */
+.move-to-all-posts-btn {
+display: inline-flex;
+align-items: center;
+gap: 10px;
+background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+color: white;
+padding: 12px 30px;
+border-radius: 30px;
+text-decoration: none;
+font-weight: 600;
+transition: var(--transition);
+cursor: pointer;
+border: none;
+margin-top: 30px;
+font-size: 1rem;
+}
+.move-to-all-posts-btn:hover {
+background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+transform: translateY(-3px);
+color: white;
+box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.move-to-all-posts-btn i {
+transition: var(--transition);
+}
+.move-to-all-posts-btn:hover i {
+transform: rotate(-45deg);
 }
 /* Create Post Button */
 .create-post-btn {
@@ -799,6 +853,18 @@ min-height: 250px;
 flex-direction: column;
 gap: 10px;
 }
+.blog-content-preview {
+-webkit-line-clamp: 4;
+max-height: 120px;
+}
+.read-more-btn {
+padding: 5px 15px;
+font-size: 0.8rem;
+}
+.move-to-all-posts-btn {
+width: 100%;
+justify-content: center;
+}
 }
 @media (max-width: 576px) {
 .page-title { font-size: 1.8rem; }
@@ -842,7 +908,7 @@ aria-label="Toggle navigation"
 <ul class="navbar-nav ms-auto align-items-center">
 <!-- Search Input -->
 <li class="nav-item me-3">
-<input type="text" id="searchInput" class="navbar-search-input" placeholder="Search posts...">
+<input type="text" id="searchInput" class="navbar-search-input" placeholder="Search posts or tags...">
 </li>
 <li class="nav-item" id="authNav">
 <!-- Auth buttons will be inserted here dynamically -->
@@ -1436,6 +1502,27 @@ blogListView.innerHTML = `
 }
 }
 
+// Strip HTML tags and get plain text
+function stripHtmlTags(html) {
+const tempDiv = document.createElement('div');
+tempDiv.innerHTML = html;
+return tempDiv.textContent || tempDiv.innerText || '';
+}
+
+// Get content preview with more text
+function getContentPreview(content, charLimit = 400) {
+const plainText = stripHtmlTags(content);
+if (plainText.length <= charLimit) {
+return plainText;
+}
+let preview = plainText.substring(0, charLimit);
+const lastPeriod = preview.lastIndexOf('.');
+if (lastPeriod > charLimit * 0.7) {
+preview = preview.substring(0, lastPeriod + 1);
+}
+return preview.trim() + '...';
+}
+
 function renderBlogPosts(posts) {
 if (posts.length === 0) {
 blogListView.innerHTML = `
@@ -1486,10 +1573,7 @@ const actionsHTML = currentUser ? `
 </button>
 </div>
 ` : '';
-// Create content preview (strip HTML tags for preview)
-const tempDiv = document.createElement('div');
-tempDiv.innerHTML = post.content;
-const contentPreview = tempDiv.textContent.substring(0, 200) + '...';
+const contentPreview = getContentPreview(post.content, 400);
 postsHTML += `
 <div class="blog-card" data-post-id="${postId}">
 ${actionsHTML}
@@ -1508,12 +1592,14 @@ ${contentPreview}
 </div>
 ${mediaHTML ? `<div style="margin-top: 15px;"><span class="badge bg-primary"><i class="fas fa-image me-1"></i>Has Media</span></div>` : ''}
 ${tagsHTML}
+<button class="read-more-btn" data-post-id="${postId}" title="Read full post">
+Read More <i class="fas fa-arrow-right"></i>
+</button>
 </div>
 `;
 });
 blogListView.innerHTML = postsHTML;
 
-// Add click handlers for post titles
 document.querySelectorAll('.blog-title').forEach(title => {
 title.addEventListener('click', (e) => {
 e.stopPropagation();
@@ -1522,7 +1608,14 @@ openSinglePost(postId);
 });
 });
 
-// Add event listeners to edit and delete buttons
+document.querySelectorAll('.read-more-btn').forEach(btn => {
+btn.addEventListener('click', (e) => {
+e.stopPropagation();
+const postId = btn.getAttribute('data-post-id');
+openSinglePost(postId);
+});
+});
+
 document.querySelectorAll('.edit-btn').forEach(btn => {
 btn.addEventListener('click', (e) => {
 e.stopPropagation();
@@ -1601,6 +1694,13 @@ const shareButtonsHTML = `
 </button>
 </div>
 `;
+const moveToAllPostsHTML = `
+<div style="text-align: center; margin-top: 40px;">
+<button class="move-to-all-posts-btn" id="moveToAllPostsBtn">
+<i class="fas fa-list-ul"></i>Move to All Posts
+</button>
+</div>
+`;
 singlePostContent.innerHTML = `
 <div class="single-post-header">
 <h1 class="single-post-title">${post.title}</h1>
@@ -1617,14 +1717,15 @@ ${post.content}
 ${tagsHTML}
 ${adminActionsHTML}
 ${shareButtonsHTML}
+${moveToAllPostsHTML}
 `;
-// Switch to single post view
 blogListView.classList.add('hidden');
 singlePostView.classList.add('active');
-// Scroll to top
 window.scrollTo({ top: 0, behavior: 'smooth' });
-// Update URL hash for bookmarking
 window.location.hash = `post-${postId}`;
+
+// Add event listener for Move to All Posts button
+document.getElementById('moveToAllPostsBtn').addEventListener('click', closeSinglePost);
 }
 
 function closeSinglePost() {
@@ -1664,22 +1765,18 @@ window.open(shareUrl, '_blank', 'width=600,height=400');
 }
 }
 
-// Back to posts button
 backToPostsBtn.addEventListener('click', closeSinglePost);
 
-// Check URL hash on page load
 window.addEventListener('load', () => {
 const hash = window.location.hash;
 if (hash && hash.startsWith('#post-')) {
 const postId = hash.replace('#post-', '');
-// Wait for posts to load
 setTimeout(() => {
 openSinglePost(postId);
 }, 1000);
 }
 });
 
-// Open edit modal with post data
 async function openEditModal(postId) {
 if (!currentUser) {
 showAdminLoginModal();
@@ -1711,7 +1808,6 @@ showFormAlert('Failed to load post: ' + error.message, 'error');
 }
 }
 
-// Create or update post
 async function savePost(postData, postId = null) {
 try {
 if (!firebaseInitialized || !db || !currentUser) {
@@ -1743,7 +1839,6 @@ throw error;
 }
 }
 
-// Delete post
 async function deletePost(postId) {
 try {
 if (!firebaseInitialized || !db || !currentUser) {
@@ -1758,7 +1853,6 @@ throw error;
 }
 }
 
-// Form submission
 postForm.addEventListener('submit', async (e) => {
 e.preventDefault();
 if (!currentUser) {
@@ -1812,7 +1906,6 @@ submitPostBtn.innerHTML = originalBtnText;
 }
 });
 
-// Open delete confirmation
 function openDeleteConfirm(postId) {
 if (!currentUser) {
 showAdminLoginModal();
@@ -1822,7 +1915,6 @@ currentPostId = postId;
 new bootstrap.Modal(deleteConfirmModal).show();
 }
 
-// Confirm delete
 confirmDeleteBtn.addEventListener('click', async () => {
 if (!currentPostId || !currentUser) return;
 const originalBtnText = confirmDeleteBtn.innerHTML;
@@ -1847,12 +1939,10 @@ currentPostId = null;
 }
 });
 
-// Show admin login modal
 function showAdminLoginModal() {
 new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
 }
 
-// Open create post modal
 createPostBtn.addEventListener('click', () => {
 if (!currentUser) {
 showAdminLoginModal();
@@ -1870,7 +1960,6 @@ submitPostBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Publish Post';
 new bootstrap.Modal(document.getElementById('postModal')).show();
 });
 
-// Admin login form submission
 adminLoginForm.addEventListener('submit', async (e) => {
 e.preventDefault();
 const email = document.getElementById('adminEmail').value.trim();
@@ -1894,7 +1983,7 @@ submitAdminLoginBtn.innerHTML = originalBtnText;
 }
 });
 
-// === SEARCH FUNCTIONALITY ===
+// === SEARCH FUNCTIONALITY (WITH TAGS) ===
 if (searchInput) {
 searchInput.addEventListener('input', (e) => {
 const term = e.target.value.toLowerCase();
@@ -1905,7 +1994,14 @@ if (existingMsg) existingMsg.remove();
 cards.forEach(card => {
 const title = card.querySelector('.blog-title') ? card.querySelector('.blog-title').textContent.toLowerCase() : '';
 const content = card.querySelector('.blog-content') ? card.querySelector('.blog-content').textContent.toLowerCase() : '';
-if (title.includes(term) || content.includes(term)) {
+// Get tags from the card
+const tagBadges = card.querySelectorAll('.blog-tags .badge');
+let tagsText = '';
+tagBadges.forEach(badge => {
+tagsText += badge.textContent.toLowerCase() + ' ';
+});
+// Search in title, content, AND tags
+if (title.includes(term) || content.includes(term) || tagsText.includes(term)) {
 card.style.display = 'block';
 hasResults = true;
 } else {
@@ -1916,19 +2012,17 @@ if (!hasResults && cards.length > 0) {
 const noResultsMsg = document.createElement('div');
 noResultsMsg.id = 'searchNoResults';
 noResultsMsg.className = 'no-posts';
-noResultsMsg.innerHTML = '<i class="fas fa-search"></i><h3>No posts found</h3><p>Try a different search term</p>';
+noResultsMsg.innerHTML = '<i class="fas fa-search"></i><h3>No posts found</h3><p>Try a different search term or tag</p>';
 blogListView.appendChild(noResultsMsg);
 }
 });
 }
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
 initializeFirebase();
 initializeQuillEditor();
 });
 
-// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 anchor.addEventListener('click', function(e) {
 if (this.getAttribute('href') === '#') {
