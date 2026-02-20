@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anil Maharjan Blog</title>
+<title>Blog</title>
 <!-- Critical Theme FOUC Fix -->
 <script>
 (function() {
@@ -527,6 +527,25 @@ max-width: 100%;
 border-radius: 10px;
 margin: 20px 0;
 }
+.single-post-content iframe {
+width: 100%;
+height: 500px;
+border-radius: 10px;
+margin: 20px 0;
+border: none;
+box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+/* Video in Quill Editor - Larger Size */
+.ql-editor iframe {
+width: 100% !important;
+height: 450px !important;
+max-width: 100%;
+border-radius: 10px;
+}
+.ql-container .ql-video {
+width: 100% !important;
+height: 450px !important;
+}
 .back-to-posts-btn {
 display: inline-flex;
 align-items: center;
@@ -672,13 +691,14 @@ font-family: 'Open Sans', sans-serif;
 font-size: 1rem;
 color: var(--text-color);
 background-color: var(--card-bg);
+min-height: 400px;
 }
 [data-theme="dark"] .ql-editor {
 background-color: var(--card-bg);
 color: var(--text-color);
 }
-/* Image Upload Button in Editor */
-.image-upload-btn {
+/* Image & Video Upload Buttons in Editor */
+.media-upload-btn {
 background-color: var(--accent-color);
 color: white;
 border: none;
@@ -688,10 +708,17 @@ cursor: pointer;
 font-size: 0.9rem;
 transition: var(--transition);
 margin-top: 10px;
+margin-right: 10px;
 }
-.image-upload-btn:hover {
+.media-upload-btn:hover {
 background-color: var(--primary-color);
 transform: translateY(-2px);
+}
+.media-upload-btn.video-btn {
+background-color: var(--primary-color);
+}
+.media-upload-btn.video-btn:hover {
+background-color: var(--name-color);
 }
 /* Loading Spinner */
 .spinner {
@@ -858,6 +885,12 @@ gap: 5px;
 width: 100%;
 margin-bottom: 10px;
 }
+.ql-editor iframe {
+height: 400px !important;
+}
+.single-post-content iframe {
+height: 450px;
+}
 }
 @media (max-width: 768px) {
 .hero-section { padding: 80px 0 50px; }
@@ -898,6 +931,17 @@ justify-content: center;
 .featured-image {
 height: 250px;
 }
+.media-upload-btn {
+display: block;
+width: 100%;
+margin-bottom: 10px;
+}
+.ql-editor iframe {
+height: 350px !important;
+}
+.single-post-content iframe {
+height: 350px;
+}
 }
 @media (max-width: 576px) {
 .page-title { font-size: 1.8rem; }
@@ -920,6 +964,12 @@ margin-right: 8px;
 }
 .featured-image {
 height: 200px;
+}
+.ql-editor iframe {
+height: 300px !important;
+}
+.single-post-content iframe {
+height: 300px;
 }
 }
 </style>
@@ -1083,13 +1133,16 @@ aria-label="Toggle navigation"
 <p><br></p>
 </div>
 <input type="hidden" id="postContent" name="postContent" required>
-<!-- Image Upload Options -->
+<!-- Image & Video Upload Options -->
 <div class="mt-2">
-<button type="button" class="image-upload-btn" id="insertImageUrlBtn">
+<button type="button" class="media-upload-btn" id="insertImageUrlBtn">
 <i class="fas fa-link me-2"></i>Insert Image from URL
 </button>
-<button type="button" class="image-upload-btn" id="uploadImageBtn" style="background-color: var(--primary-color);">
+<button type="button" class="media-upload-btn" id="uploadImageBtn" style="background-color: var(--primary-color);">
 <i class="fas fa-upload me-2"></i>Upload Image from Computer
+</button>
+<button type="button" class="media-upload-btn video-btn" id="insertVideoUrlBtn">
+<i class="fas fa-video me-2"></i>Insert Video from URL
 </button>
 </div>
 <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
@@ -1205,6 +1258,7 @@ const archiveListContainer = document.getElementById('archiveListContainer');
 const currentFilterBadge = document.getElementById('currentFilterBadge');
 const insertImageUrlBtn = document.getElementById('insertImageUrlBtn');
 const uploadImageBtn = document.getElementById('uploadImageBtn');
+const insertVideoUrlBtn = document.getElementById('insertVideoUrlBtn');
 const imageFileInput = document.getElementById('imageFileInput');
 
 let currentPostId = null;
@@ -1402,7 +1456,7 @@ document.getElementById('postContent').value = '';
 }
 }
 
-// === IMAGE UPLOAD FUNCTIONALITY ===
+// === IMAGE & VIDEO UPLOAD FUNCTIONALITY ===
 // Insert image from URL
 insertImageUrlBtn.addEventListener('click', () => {
 const imageUrl = prompt('Enter image URL:');
@@ -1459,6 +1513,35 @@ showFormAlert('Failed to upload image: ' + error.message, 'error');
 uploadImageBtn.disabled = false;
 uploadImageBtn.innerHTML = originalBtnText;
 imageFileInput.value = '';
+}
+});
+
+// Insert video from URL
+insertVideoUrlBtn.addEventListener('click', () => {
+const videoUrl = prompt('Enter video URL (YouTube, Vimeo, or direct video link):');
+if (videoUrl) {
+const range = quill.getSelection(true);
+
+// Extract video ID for YouTube/Vimeo or use direct URL
+let embedUrl = videoUrl;
+
+// YouTube URL handling
+const youtubeMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+if (youtubeMatch) {
+embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+}
+
+// Vimeo URL handling
+const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:\w+\/)?|album\/(?:\d+\/)?video\/|)(\d+)(?:$|\/|\?)/);
+if (vimeoMatch) {
+embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+}
+
+// Insert video into editor
+quill.insertEmbed(range.index, 'video', embedUrl);
+quill.setSelection(range.index + 1);
+
+showFormAlert('Video inserted successfully!', 'success');
 }
 });
 
