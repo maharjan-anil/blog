@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog</title>
+<title>Anil Maharjan Blog</title>
 <!-- Critical Theme FOUC Fix -->
 <script>
 (function() {
@@ -677,6 +677,22 @@ background-color: var(--card-bg);
 background-color: var(--card-bg);
 color: var(--text-color);
 }
+/* Image Upload Button in Editor */
+.image-upload-btn {
+background-color: var(--accent-color);
+color: white;
+border: none;
+padding: 8px 15px;
+border-radius: 5px;
+cursor: pointer;
+font-size: 0.9rem;
+transition: var(--transition);
+margin-top: 10px;
+}
+.image-upload-btn:hover {
+background-color: var(--primary-color);
+transform: translateY(-2px);
+}
 /* Loading Spinner */
 .spinner {
 width: 40px;
@@ -1067,6 +1083,16 @@ aria-label="Toggle navigation"
 <p><br></p>
 </div>
 <input type="hidden" id="postContent" name="postContent" required>
+<!-- Image Upload Options -->
+<div class="mt-2">
+<button type="button" class="image-upload-btn" id="insertImageUrlBtn">
+<i class="fas fa-link me-2"></i>Insert Image from URL
+</button>
+<button type="button" class="image-upload-btn" id="uploadImageBtn" style="background-color: var(--primary-color);">
+<i class="fas fa-upload me-2"></i>Upload Image from Computer
+</button>
+</div>
+<input type="file" id="imageFileInput" accept="image/*" style="display: none;">
 </div>
 <div class="mb-3">
 <label for="postImage" class="form-label">
@@ -1136,6 +1162,7 @@ aria-label="Toggle navigation"
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <!-- Quill Rich Text Editor -->
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <!-- Bootstrap JS -->
@@ -1176,6 +1203,9 @@ const submitAdminLoginBtn = document.getElementById('submitAdminLoginBtn');
 const searchInput = document.getElementById('searchInput');
 const archiveListContainer = document.getElementById('archiveListContainer');
 const currentFilterBadge = document.getElementById('currentFilterBadge');
+const insertImageUrlBtn = document.getElementById('insertImageUrlBtn');
+const uploadImageBtn = document.getElementById('uploadImageBtn');
+const imageFileInput = document.getElementById('imageFileInput');
 
 let currentPostId = null;
 let currentUser = null;
@@ -1183,6 +1213,7 @@ let quill = null;
 let allPosts = [];
 let currentArchiveFilter = null;
 let currentPostData = null;
+let storage = null;
 
 // Set current year
 document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -1259,6 +1290,7 @@ firebase.initializeApp(firebaseConfig);
 }
 db = firebase.firestore();
 auth = firebase.auth();
+storage = firebase.storage();
 auth.onAuthStateChanged(user => {
 currentUser = user;
 updateAuthUI();
@@ -1369,6 +1401,66 @@ localStorage.removeItem('quillContent');
 document.getElementById('postContent').value = '';
 }
 }
+
+// === IMAGE UPLOAD FUNCTIONALITY ===
+// Insert image from URL
+insertImageUrlBtn.addEventListener('click', () => {
+const imageUrl = prompt('Enter image URL:');
+if (imageUrl) {
+const range = quill.getSelection(true);
+quill.insertEmbed(range.index, 'image', imageUrl);
+quill.setSelection(range.index + 1);
+}
+});
+
+// Upload image from computer
+uploadImageBtn.addEventListener('click', () => {
+imageFileInput.click();
+});
+
+imageFileInput.addEventListener('change', async (e) => {
+const file = e.target.files[0];
+if (!file) return;
+
+// Validate file type
+if (!file.type.startsWith('image/')) {
+showFormAlert('Please select a valid image file!', 'error');
+return;
+}
+
+// Validate file size (max 5MB)
+if (file.size > 5 * 1024 * 1024) {
+showFormAlert('Image size must be less than 5MB!', 'error');
+return;
+}
+
+// Show loading state
+const originalBtnText = uploadImageBtn.innerHTML;
+uploadImageBtn.disabled = true;
+uploadImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+
+try {
+// Upload to Firebase Storage
+const storageRef = storage.ref();
+const imageRef = storageRef.child(`blog-images/${Date.now()}_${file.name}`);
+const uploadTask = await imageRef.put(file);
+const downloadURL = await uploadTask.ref.getDownloadURL();
+
+// Insert image into editor
+const range = quill.getSelection(true);
+quill.insertEmbed(range.index, 'image', downloadURL);
+quill.setSelection(range.index + 1);
+
+showFormAlert('Image uploaded successfully!', 'success');
+} catch (error) {
+console.error('Image upload error:', error);
+showFormAlert('Failed to upload image: ' + error.message, 'error');
+} finally {
+uploadImageBtn.disabled = false;
+uploadImageBtn.innerHTML = originalBtnText;
+imageFileInput.value = '';
+}
+});
 
 // === ARCHIVE FUNCTIONALITY ===
 function getMonthYearKey(date) {
