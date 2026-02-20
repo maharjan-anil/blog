@@ -83,6 +83,11 @@ font-size: 1.5rem;
 color: var(--primary-color) !important;
 text-decoration: none;
 cursor: pointer;
+transition: var(--transition);
+}
+.nav-brand:hover {
+color: var(--name-color) !important;
+transform: scale(1.02);
 }
 .nav-brand span {
 color: var(--name-color);
@@ -445,6 +450,15 @@ font-size: 0.75rem;
 }
 .read-more-btn:hover i {
 transform: translateX(3px);
+}
+/* Featured/Post Title Image */
+.featured-image {
+width: 100%;
+height: 350px;
+object-fit: cover;
+border-radius: 15px;
+margin-bottom: 25px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 .blog-image {
 width: 100%;
@@ -865,6 +879,9 @@ font-size: 0.8rem;
 width: 100%;
 justify-content: center;
 }
+.featured-image {
+height: 250px;
+}
 }
 @media (max-width: 576px) {
 .page-title { font-size: 1.8rem; }
@@ -885,6 +902,9 @@ font-size: 0.8rem;
 .ql-toolbar.ql-snow .ql-formats {
 margin-right: 8px;
 }
+.featured-image {
+height: 200px;
+}
 }
 </style>
 </head>
@@ -892,7 +912,7 @@ margin-right: 8px;
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-custom">
 <div class="container">
-<a class="navbar-brand nav-brand" href="#" onclick="location.reload()" aria-label="Home">Anil <span>Maharjan</span></a>
+<a class="navbar-brand nav-brand" href="index.html" onclick="window.location.href='index.html'; return false;" aria-label="Home">Anil <span>Maharjan</span></a>
 <button
 class="navbar-toggler"
 type="button"
@@ -1035,6 +1055,13 @@ aria-label="Toggle navigation"
 <input type="text" class="form-control-custom" id="postTitle" required placeholder="Enter post title">
 </div>
 <div class="mb-3">
+<label for="featuredImage" class="form-label">
+<i class="fas fa-image me-2"></i>Featured Image URL (optional)
+</label>
+<input type="url" class="form-control-custom" id="featuredImage" placeholder="https://example.com/featured-image.jpg">
+<small class="text-muted"><i class="fas fa-info-circle me-1"></i>This image will be displayed at the top of your post</small>
+</div>
+<div class="mb-3">
 <label for="postContent" class="form-label">Content *</label>
 <div id="quillEditor">
 <p><br></p>
@@ -1042,17 +1069,23 @@ aria-label="Toggle navigation"
 <input type="hidden" id="postContent" name="postContent" required>
 </div>
 <div class="mb-3">
-<label for="postImage" class="form-label">Image URL (optional)</label>
+<label for="postImage" class="form-label">
+<i class="fas fa-images me-2"></i>Additional Image URL (optional)
+</label>
 <input type="url" class="form-control-custom" id="postImage" placeholder="https://example.com/image.jpg">
-<small class="text-muted">Paste image URL or leave blank</small>
+<small class="text-muted">Additional image to display within the post content</small>
 </div>
 <div class="mb-3">
-<label for="postVideo" class="form-label">YouTube Video ID (optional)</label>
+<label for="postVideo" class="form-label">
+<i class="fab fa-youtube me-2"></i>YouTube Video ID (optional)
+</label>
 <input type="text" class="form-control-custom" id="postVideo" placeholder="Enter YouTube video ID (e.g., dQw4w9WgXcQ)">
 <small class="text-muted">Only YouTube videos supported</small>
 </div>
 <div class="mb-3">
-<label for="postTags" class="form-label">Tags (optional)</label>
+<label for="postTags" class="form-label">
+<i class="fas fa-tags me-2"></i>Tags (optional)
+</label>
 <input type="text" class="form-control-custom" id="postTags" placeholder="tag1, tag2, tag3">
 <small class="text-muted">Separate tags with commas</small>
 </div>
@@ -1543,6 +1576,11 @@ year: 'numeric',
 month: 'long',
 day: 'numeric'
 });
+// Featured image for blog list
+let featuredImageHTML = '';
+if (post.featuredImage) {
+featuredImageHTML = `<img src="${post.featuredImage}" alt="${post.title}" class="featured-image">`;
+}
 let mediaHTML = '';
 if (post.imageUrl) {
 mediaHTML = `<img src="${post.imageUrl}" alt="Post image" class="blog-image">`;
@@ -1584,6 +1622,7 @@ ${actionsHTML}
 ${currentUser ? '<span class="admin-badge"><i class="fas fa-user-shield"></i> Admin</span>' : ''}
 </div>
 </div>
+${featuredImageHTML}
 <h3 class="blog-title" data-post-id="${postId}" title="Click to read full post">
 ${post.title}
 </h3>
@@ -1646,6 +1685,11 @@ year: 'numeric',
 month: 'long',
 day: 'numeric'
 });
+// Featured image at the top of single post
+let featuredImageHTML = '';
+if (post.featuredImage) {
+featuredImageHTML = `<img src="${post.featuredImage}" alt="${post.title}" class="featured-image">`;
+}
 let mediaHTML = '';
 if (post.imageUrl) {
 mediaHTML = `<img src="${post.imageUrl}" alt="Post image" class="blog-image">`;
@@ -1710,10 +1754,11 @@ singlePostContent.innerHTML = `
 <span><i class="fas fa-clock"></i> ${getReadTime(post.content)} min read</span>
 </div>
 </div>
-${mediaHTML}
+${featuredImageHTML}
 <div class="single-post-content">
 ${post.content}
 </div>
+${mediaHTML}
 ${tagsHTML}
 ${adminActionsHTML}
 ${shareButtonsHTML}
@@ -1724,7 +1769,6 @@ singlePostView.classList.add('active');
 window.scrollTo({ top: 0, behavior: 'smooth' });
 window.location.hash = `post-${postId}`;
 
-// Add event listener for Move to All Posts button
 document.getElementById('moveToAllPostsBtn').addEventListener('click', closeSinglePost);
 }
 
@@ -1791,6 +1835,7 @@ return;
 const post = postDoc.data();
 postIdInput.value = postId;
 document.getElementById('postTitle').value = post.title || '';
+document.getElementById('featuredImage').value = post.featuredImage || '';
 document.getElementById('postImage').value = post.imageUrl || '';
 document.getElementById('postVideo').value = post.videoId || '';
 document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
@@ -1862,6 +1907,7 @@ return;
 const postId = postIdInput.value.trim();
 const title = document.getElementById('postTitle').value.trim();
 const content = document.getElementById('postContent').value.trim();
+const featuredImage = document.getElementById('featuredImage').value.trim();
 const imageUrl = document.getElementById('postImage').value.trim();
 const videoId = document.getElementById('postVideo').value.trim();
 const tagsInput = document.getElementById('postTags').value.trim();
@@ -1876,6 +1922,7 @@ submitPostBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...
 const postData = {
 title,
 content,
+featuredImage: featuredImage || null,
 imageUrl: imageUrl || null,
 videoId: videoId || null,
 tags
@@ -1994,13 +2041,11 @@ if (existingMsg) existingMsg.remove();
 cards.forEach(card => {
 const title = card.querySelector('.blog-title') ? card.querySelector('.blog-title').textContent.toLowerCase() : '';
 const content = card.querySelector('.blog-content') ? card.querySelector('.blog-content').textContent.toLowerCase() : '';
-// Get tags from the card
 const tagBadges = card.querySelectorAll('.blog-tags .badge');
 let tagsText = '';
 tagBadges.forEach(badge => {
 tagsText += badge.textContent.toLowerCase() + ' ';
 });
-// Search in title, content, AND tags
 if (title.includes(term) || content.includes(term) || tagsText.includes(term)) {
 card.style.display = 'block';
 hasResults = true;
