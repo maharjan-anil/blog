@@ -13,8 +13,7 @@
 <!-- Critical Theme FOUC Fix -->
 <script>
 (function() {
-const theme = localStorage.getItem('theme') ||
-(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+const theme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', theme);
 if (theme === 'dark') {
 document.documentElement.dataset.initialTheme = 'dark';
@@ -27,956 +26,1160 @@ document.documentElement.dataset.initialTheme = 'dark';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Quill Rich Text Editor CSS -->
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- Google Fonts - Minimalist typography -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
---primary-color: #4a6fa5;
---secondary-color: #166088;
---accent-color: #4ECDC4;
---name-color: #ff6b35;
---light-color: #f8f9fa;
---dark-color: #343a40;
---text-color: #333;
---text-light: #777;
---card-bg: #ffffff;
---body-bg: #f9f9f9;
---transition: all 0.3s ease;
+  /* Minimalist Dark Palette */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --bg-elevated: #1e1e1e;
+  
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  
+  --border-color: #2a2a2a;
+  --border-subtle: #1f1f1f;
+  
+  --accent: #888888;
+  --accent-hover: #aaaaaa;
+  
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  
+  --transition: all 0.2s ease-in-out;
 }
-[data-theme="dark"] {
---primary-color: #5a8fd8;
---secondary-color: #2a7bc8;
---accent-color: #4ECDC4;
---name-color: #ff8c5a;
---light-color: #2d3748;
---dark-color: #1a202c;
---text-color: #e2e8f0;
---text-light: #a0aec0;
---card-bg: #2d3748;
---body-bg: #1a202c;
+
+[data-theme="light"] {
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f0;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  
+  --border-color: #e0e0e0;
+  --border-subtle: #f0f0f0;
+  
+  --accent: #666666;
+  --accent-hover: #444444;
+  
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
 }
+
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
 body {
-font-family: 'Open Sans', sans-serif;
-color: var(--text-color);
-line-height: 1.6;
-background-color: var(--body-bg);
-overflow-x: hidden;
-transition: var(--transition);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.7;
+  background-color: var(--bg-primary);
+  overflow-x: hidden;
+  transition: var(--transition);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-h1, h2, h3, h4, h5 {
-font-family: 'Poppins', sans-serif;
-font-weight: 600;
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
 }
-/* Navigation */
+
+/* Navigation - Minimalist */
 .navbar-custom {
-background-color: var(--card-bg);
-box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-padding: 15px 0;
-position: sticky;
-top: 0;
-z-index: 1000;
-transition: var(--transition);
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: var(--transition);
 }
+
 .nav-brand {
-font-family: 'Poppins', sans-serif;
-font-weight: 700;
-font-size: 1.5rem;
-color: var(--primary-color) !important;
-text-decoration: none;
-cursor: pointer;
-transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--text-primary) !important;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: -0.01em;
 }
+
 .nav-brand:hover {
-color: var(--name-color) !important;
-transform: scale(1.02);
+  opacity: 0.85;
 }
+
 .nav-brand span {
-color: var(--name-color);
+  color: var(--text-secondary);
+  font-weight: 400;
 }
-/* Admin Info in Navbar */
+
+/* Admin Info - Subtle */
 .admin-info {
-display: flex;
-align-items: center;
-gap: 10px;
-margin-left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 12px;
 }
+
 .admin-avatar {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-background-color: var(--accent-color);
-display: flex;
-align-items: center;
-justify-content: center;
-color: white;
-font-weight: 600;
-font-size: 0.9rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.85rem;
 }
+
 .admin-name {
-font-weight: 600;
-color: var(--primary-color);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
 }
-.admin-btn {
-background-color: var(--primary-color);
-color: white;
-border: none;
-padding: 8px 20px;
-border-radius: 25px;
-font-weight: 600;
-transition: var(--transition);
-cursor: pointer;
+
+.admin-btn, .logout-btn {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 7px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  cursor: pointer;
 }
-.admin-btn:hover {
-background-color: var(--name-color);
-transform: translateY(-2px);
+
+.admin-btn:hover, .logout-btn:hover {
+  background-color: var(--bg-elevated);
+  border-color: var(--accent);
 }
+
 .logout-btn {
-background-color: #dc3545;
-color: white;
-border: none;
-padding: 8px 20px;
-border-radius: 25px;
-font-weight: 600;
-transition: var(--transition);
-cursor: pointer;
+  background-color: transparent;
+  border-color: var(--border-color);
 }
+
 .logout-btn:hover {
-background-color: #c82333;
-transform: translateY(-2px);
+  border-color: var(--text-muted);
 }
-/* Theme Toggle Button */
+
+/* Theme Toggle - Minimal */
 .theme-toggle {
-background: none;
-border: 2px solid var(--primary-color);
-color: var(--primary-color);
-width: 45px;
-height: 45px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: var(--transition);
-margin-left: 10px;
-cursor: pointer;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  margin-left: 8px;
+  cursor: pointer;
 }
+
 .theme-toggle:hover {
-background-color: var(--primary-color);
-color: white;
-transform: rotate(30deg);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
-/* Search Input in Navbar */
+
+/* Search Input - Clean */
 .navbar-search-input {
-background-color: var(--body-bg);
-color: var(--text-color);
-border: 1px solid var(--light-color);
-border-radius: 20px;
-padding: 6px 15px;
-width: 200px;
-transition: var(--transition);
-font-size: 0.9rem;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  width: 200px;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
 }
+
+.navbar-search-input::placeholder {
+  color: var(--text-muted);
+}
+
 .navbar-search-input:focus {
-outline: none;
-border-color: var(--primary-color);
-box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+  outline: none;
+  border-color: var(--accent);
+  background-color: var(--bg-elevated);
 }
-/* Hero Section */
+
+/* Hero Section - Minimal Dark */
 .hero-section {
-background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-color: white;
-padding: 100px 0 60px;
-position: relative;
-overflow: hidden;
-text-align: center;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 90px 0 60px;
+  text-align: center;
 }
-.hero-section::before {
-content: "";
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-image: url("image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-opacity: 0.2;
-}
+
 .hero-content {
-position: relative;
-z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
 }
+
 .page-title {
-font-size: 3.5rem;
-font-weight: 700;
-margin-bottom: 20px;
-text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-color: white;
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
 }
+
 .page-subtitle {
-font-size: 1.5rem;
-font-weight: 300;
-opacity: 0.9;
-max-width: 700px;
-margin: 0 auto;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 550px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
+
 /* Blog Section */
 .blog-section {
-padding: 80px 0;
+  padding: 70px 0;
 }
+
 .section-title {
-text-align: center;
-margin-bottom: 50px;
-color: var(--primary-color);
-font-size: 2.5rem;
-position: relative;
-padding-bottom: 15px;
+  text-align: center;
+  margin-bottom: 45px;
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 12px;
 }
+
 .section-title::after {
-content: "";
-position: absolute;
-bottom: 0;
-left: 50%;
-transform: translateX(-50%);
-width: 100px;
-height: 4px;
-background-color: var(--name-color);
-border-radius: 2px;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background-color: var(--accent);
 }
+
 /* Blog Container with Sidebar */
 .blog-container {
-display: grid;
-grid-template-columns: 1fr 320px;
-gap: 40px;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 35px;
 }
-/* Archive Sidebar */
+
+/* Archive Sidebar - Minimal Card */
 .archive-sidebar {
-background-color: var(--card-bg);
-border-radius: 15px;
-padding: 25px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-height: fit-content;
-position: sticky;
-top: 100px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 90px;
 }
+
 .archive-title {
-font-size: 1.3rem;
-color: var(--primary-color);
-margin-bottom: 20px;
-padding-bottom: 10px;
-border-bottom: 2px solid var(--light-color);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .archive-title i {
-margin-right: 8px;
-color: var(--accent-color);
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
+
 .archive-list {
-list-style: none;
-padding: 0;
-margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
+
 .archive-item {
-margin-bottom: 8px;
+  margin-bottom: 6px;
 }
+
 .archive-link {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px 15px;
-background-color: var(--body-bg);
-border-radius: 8px;
-color: var(--text-color);
-text-decoration: none;
-transition: var(--transition);
-cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  background-color: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 500;
 }
+
 .archive-link:hover {
-background-color: var(--primary-color);
-color: white;
-transform: translateX(5px);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
 }
+
 .archive-link.active {
-background-color: var(--name-color);
-color: white;
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
+
 .archive-count {
-background-color: var(--accent-color);
-color: white;
-padding: 2px 10px;
-border-radius: 12px;
-font-size: 0.8rem;
-font-weight: 600;
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
 }
-.archive-link:hover .archive-count {
-background-color: white;
-color: var(--accent-color);
-}
+
+.archive-link:hover .archive-count,
 .archive-link.active .archive-count {
-background-color: white;
-color: var(--name-color);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
 }
-/* Blog Cards */
+
+/* Blog Cards - Clean & Minimal */
 .blog-card {
-background-color: var(--card-bg);
-border-radius: 15px;
-padding: 30px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-transition: var(--transition);
-margin-bottom: 30px;
-border-left: 5px solid var(--accent-color);
-position: relative;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: var(--transition);
+  margin-bottom: 24px;
+  position: relative;
 }
+
 .blog-card:hover {
-transform: translateY(-5px);
-box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
-/* Post Title Clickable */
+
+/* Post Title Clickable - Simple */
 .blog-title {
-font-size: 1.8rem;
-color: var(--primary-color);
-font-weight: 700;
-margin-bottom: 15px;
-line-height: 1.3;
-cursor: pointer;
-transition: var(--transition);
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: var(--transition);
 }
+
 .blog-title:hover {
-color: var(--name-color);
+  color: var(--accent-hover);
 }
-/* Post Actions */
+
+/* Post Actions - Subtle */
 .post-actions {
-position: absolute;
-top: 15px;
-right: 15px;
-display: flex;
-gap: 8px;
-opacity: 0;
-transition: var(--transition);
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: var(--transition);
 }
+
 .blog-card:hover .post-actions {
-opacity: 1;
+  opacity: 1;
 }
+
 .action-btn {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-border: none;
-cursor: pointer;
-font-size: 0.9rem;
-transition: var(--transition);
-box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: var(--transition);
+  color: var(--text-secondary);
 }
-.edit-btn {
-background-color: var(--accent-color);
-color: white;
+
+.action-btn:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
-.edit-btn:hover {
-background-color: #3ab7af;
-transform: scale(1.1);
-}
-.delete-btn {
-background-color: #dc3545;
-color: white;
-}
-.delete-btn:hover {
-background-color: #c82333;
-transform: scale(1.1);
-}
+
 .blog-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 20px;
-padding-bottom: 15px;
-border-bottom: 2px solid var(--light-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 10px;
 }
+
 .blog-meta {
-display: flex;
-gap: 20px;
-font-size: 0.9rem;
-color: var(--text-light);
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
 }
+
 .blog-meta i {
-margin-right: 5px;
+  margin-right: 5px;
+  color: var(--text-muted);
 }
+
 .admin-badge {
-display: inline-block;
-background-color: var(--primary-color);
-color: white;
-padding: 3px 10px;
-border-radius: 15px;
-font-size: 0.85rem;
-font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
 }
-/* Content Preview with More Lines */
+
+/* Content Preview - Clean */
 .blog-content {
-color: var(--text-color);
-margin-bottom: 20px;
-line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.7;
+  font-size: 0.95rem;
 }
+
 .blog-content-preview {
-display: -webkit-box;
--webkit-line-clamp: 5;
--webkit-box-orient: vertical;
-overflow: hidden;
-text-overflow: ellipsis;
-max-height: 150px;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 95px;
 }
-/* Read More Button - Smaller Size */
+
+/* Read More Button - Minimal */
 .read-more-btn {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-color: white;
-padding: 6px 18px;
-border-radius: 20px;
-text-decoration: none;
-font-weight: 600;
-transition: var(--transition);
-cursor: pointer;
-border: none;
-font-size: 0.85rem;
-margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  margin-top: 8px;
 }
+
 .read-more-btn:hover {
-background: linear-gradient(135deg, var(--name-color), var(--primary-color));
-transform: translateX(5px);
-color: white;
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background-color: var(--bg-elevated);
+  border-color: var(--accent);
+  color: var(--text-primary);
 }
+
 .read-more-btn i {
-transition: var(--transition);
-font-size: 0.75rem;
+  font-size: 0.7rem;
+  transition: var(--transition);
 }
+
 .read-more-btn:hover i {
-transform: translateX(3px);
+  transform: translateX(2px);
 }
-/* Featured/Post Title Image */
+
+/* Featured Image - Clean */
 .featured-image {
-width: 100%;
-height: 350px;
-object-fit: cover;
-border-radius: 15px;
-margin-bottom: 25px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
+  border: 1px solid var(--border-color);
 }
+
 .blog-image {
-width: 100%;
-height: auto;
-border-radius: 10px;
-margin: 20px 0;
-box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-max-height: 500px;
-object-fit: cover;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 16px 0;
+  border: 1px solid var(--border-color);
+  max-height: 400px;
+  object-fit: cover;
 }
+
 .blog-video {
-width: 100%;
-height: 400px;
-border-radius: 10px;
-margin: 20px 0;
+  width: 100%;
+  height: 320px;
+  border-radius: var(--radius-sm);
+  margin: 16px 0;
+  border: 1px solid var(--border-color);
 }
+
 /* Single Post View */
 .single-post-view {
-display: none;
+  display: none;
 }
+
 .single-post-view.active {
-display: block;
+  display: block;
 }
+
 .blog-list-view {
-display: block;
+  display: block;
 }
+
 .blog-list-view.hidden {
-display: none;
+  display: none;
 }
+
 .single-post-header {
-margin-bottom: 30px;
+  margin-bottom: 28px;
+  text-align: center;
 }
+
 .single-post-title {
-font-size: 2.5rem;
-color: var(--primary-color);
-font-weight: 700;
-margin-bottom: 20px;
-line-height: 1.3;
+  font-size: 2rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.35;
 }
+
 .single-post-meta {
-display: flex;
-gap: 25px;
-font-size: 1rem;
-color: var(--text-light);
-margin-bottom: 20px;
-padding-bottom: 20px;
-border-bottom: 2px solid var(--light-color);
+  display: flex;
+  gap: 18px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  justify-content: center;
+  flex-wrap: wrap;
 }
+
 .single-post-meta i {
-margin-right: 8px;
-color: var(--accent-color);
+  margin-right: 6px;
 }
+
 .single-post-content {
-font-size: 1.1rem;
-line-height: 1.9;
-color: var(--text-color);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
 }
+
 .single-post-content img {
-max-width: 100%;
-height: auto;
-border-radius: 10px;
-margin: 20px 0;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  margin: 18px 0;
+  border: 1px solid var(--border-color);
 }
+
 .single-post-content video {
-max-width: 100%;
-border-radius: 10px;
-margin: 20px 0;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin: 18px 0;
+  border: 1px solid var(--border-color);
 }
+
 .single-post-content iframe {
-width: 100%;
-height: 500px;
-border-radius: 10px;
-margin: 20px 0;
-border: none;
-box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  width: 100%;
+  height: 420px;
+  border-radius: var(--radius-sm);
+  margin: 18px 0;
+  border: 1px solid var(--border-color);
 }
-/* Video in Quill Editor - Larger Size */
+
+/* Video in Quill Editor */
 .ql-editor iframe {
-width: 100% !important;
-height: 450px !important;
-max-width: 100%;
-border-radius: 10px;
+  width: 100% !important;
+  height: 380px !important;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
 }
+
 .ql-container .ql-video {
-width: 100% !important;
-height: 450px !important;
+  width: 100% !important;
+  height: 380px !important;
 }
+
 .back-to-posts-btn {
-display: inline-flex;
-align-items: center;
-gap: 10px;
-background-color: var(--primary-color);
-color: white;
-padding: 10px 25px;
-border-radius: 25px;
-text-decoration: none;
-font-weight: 600;
-transition: var(--transition);
-cursor: pointer;
-border: none;
-margin-bottom: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 9px 22px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  font-size: 0.9rem;
 }
+
 .back-to-posts-btn:hover {
-background-color: var(--name-color);
-transform: translateX(-5px);
-color: white;
+  background-color: var(--bg-elevated);
+  border-color: var(--accent);
 }
+
 /* Move to All Posts Button */
 .move-to-all-posts-btn {
-display: inline-flex;
-align-items: center;
-gap: 10px;
-background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-color: white;
-padding: 12px 30px;
-border-radius: 30px;
-text-decoration: none;
-font-weight: 600;
-transition: var(--transition);
-cursor: pointer;
-border: none;
-margin-top: 30px;
-font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 10px 26px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  margin-top: 28px;
+  font-size: 0.95rem;
 }
+
 .move-to-all-posts-btn:hover {
-background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-transform: translateY(-3px);
-color: white;
-box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  background-color: var(--bg-elevated);
+  border-color: var(--accent);
 }
-.move-to-all-posts-btn i {
-transition: var(--transition);
-}
-.move-to-all-posts-btn:hover i {
-transform: rotate(-45deg);
-}
-/* Create Post Button */
+
+/* Create Post Button - Minimal Floating */
 .create-post-btn {
-position: fixed;
-bottom: 30px;
-right: 30px;
-background-color: var(--name-color);
-color: white;
-width: 60px;
-height: 60px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-transition: var(--transition);
-z-index: 100;
-border: none;
-cursor: pointer;
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  z-index: 100;
+  cursor: pointer;
 }
+
 .create-post-btn:hover {
-transform: scale(1.1) rotate(90deg);
-box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  background-color: var(--bg-primary);
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
+
 .create-post-btn i {
-font-size: 1.5rem;
+  font-size: 1.3rem;
 }
-/* Modal Form */
+
+/* Modal Form - Clean */
 .form-control-custom {
-background-color: var(--card-bg);
-color: var(--text-color);
-border: 2px solid var(--light-color);
-border-radius: 8px;
-padding: 12px 15px;
-transition: var(--transition);
-width: 100%;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  transition: var(--transition);
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
 }
+
+.form-control-custom::placeholder {
+  color: var(--text-muted);
+}
+
 .form-control-custom:focus {
-border-color: var(--primary-color);
-box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
-outline: none;
+  border-color: var(--accent);
+  outline: none;
+  background-color: var(--bg-elevated);
 }
+
 .form-label {
-font-weight: 600;
-color: var(--primary-color);
-margin-bottom: 8px;
-display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: block;
+  font-size: 0.9rem;
 }
+
 textarea.form-control-custom {
-min-height: 150px;
-resize: vertical;
+  min-height: 140px;
+  resize: vertical;
+  font-family: 'Inter', sans-serif;
 }
+
 .submit-btn {
-background-color: var(--primary-color);
-color: white;
-border: none;
-padding: 12px 30px;
-border-radius: 50px;
-font-weight: 600;
-font-size: 1.1rem;
-transition: var(--transition);
-cursor: pointer;
-width: 100%;
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 11px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 1rem;
+  transition: var(--transition);
+  cursor: pointer;
+  width: 100%;
 }
+
 .submit-btn:hover {
-background-color: var(--name-color);
-transform: translateY(-2px);
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background-color: var(--bg-primary);
+  border-color: var(--accent);
 }
+
 .submit-btn:disabled {
-background-color: var(--text-light);
-cursor: not-allowed;
-transform: none;
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-color: var(--border-subtle);
 }
-/* Quill Editor */
+
+/* Quill Editor - Minimal Dark */
 .quill-editor {
-background-color: var(--card-bg);
-border: 2px solid var(--light-color);
-border-radius: 8px;
-transition: var(--transition);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
 }
+
 .quill-editor:focus-within {
-border-color: var(--primary-color);
-box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.1);
+  border-color: var(--accent);
 }
+
 .ql-toolbar {
-border-radius: 8px 8px 0 0 !important;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+  background-color: var(--bg-elevated) !important;
+  border-color: var(--border-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
 }
+
 .ql-container {
-border-radius: 0 0 8px 8px !important;
-min-height: 300px;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+  min-height: 300px;
+  border-color: var(--border-color) !important;
 }
+
 .ql-editor {
-font-family: 'Open Sans', sans-serif;
-font-size: 1rem;
-color: var(--text-color);
-background-color: var(--card-bg);
-min-height: 400px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--text-primary);
+  background-color: var(--bg-tertiary);
+  min-height: 400px;
+  line-height: 1.7;
 }
-[data-theme="dark"] .ql-editor {
-background-color: var(--card-bg);
-color: var(--text-color);
+
+.ql-editor::placeholder {
+  color: var(--text-muted);
 }
-/* Image & Video Upload Buttons in Editor */
+
+/* Image & Video Upload Buttons - Minimal */
 .media-upload-btn {
-background-color: var(--accent-color);
-color: white;
-border: none;
-padding: 8px 15px;
-border-radius: 5px;
-cursor: pointer;
-font-size: 0.9rem;
-transition: var(--transition);
-margin-top: 10px;
-margin-right: 10px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  margin-top: 10px;
+  margin-right: 8px;
+  font-weight: 500;
 }
+
 .media-upload-btn:hover {
-background-color: var(--primary-color);
-transform: translateY(-2px);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
-.media-upload-btn.video-btn {
-background-color: var(--primary-color);
-}
-.media-upload-btn.video-btn:hover {
-background-color: var(--name-color);
-}
-/* Loading Spinner */
+
+/* Loading Spinner - Minimal */
 .spinner {
-width: 40px;
-height: 40px;
-border: 4px solid rgba(74, 111, 165, 0.3);
-border-top: 4px solid var(--primary-color);
-border-radius: 50%;
-animation: spin 1s linear infinite;
-margin: 20px auto;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
 }
+
 @keyframes spin {
-0% { transform: rotate(0deg); }
-100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
-/* No Posts Message */
+
+/* No Posts Message - Clean */
 .no-posts {
-text-align: center;
-padding: 60px 20px;
-color: var(--text-light);
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
 }
+
 .no-posts i {
-font-size: 4rem;
-color: var(--accent-color);
-margin-bottom: 20px;
+  font-size: 3.5rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  opacity: 0.6;
 }
+
+.no-posts h3 {
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
 .no-posts p {
-font-size: 1.2rem;
-margin-top: 15px;
+  font-size: 1rem;
+  margin-top: 10px;
 }
-/* Alert Messages */
+
+/* Alert Messages - Minimal */
 .alert-custom {
-padding: 15px;
-border-radius: 8px;
-margin-bottom: 20px;
-display: none;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  display: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid;
 }
+
 .alert-success {
-background-color: #d4edda;
-color: #155724;
-border: 1px solid #c3e6cb;
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
 }
+
 .alert-error {
-background-color: #f8d7da;
-color: #721c24;
-border: 1px solid #f5c6cb;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
 }
-/* Login Modal */
+
+/* Login Modal - Clean */
 .login-modal {
-max-width: 450px;
+  max-width: 420px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
 }
+
 .login-header {
-text-align: center;
-padding: 20px 0;
-border-bottom: 2px solid var(--light-color);
-margin-bottom: 30px;
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
 }
+
 .login-header i {
-font-size: 3rem;
-color: var(--primary-color);
-margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
+
 .login-header h3 {
-color: var(--primary-color);
-margin-bottom: 5px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  font-weight: 600;
 }
+
 .login-header p {
-color: var(--text-light);
-font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
-/* Footer */
+
+/* Footer - Minimal */
 .footer-section {
-background-color: var(--dark-color);
-color: white;
-padding: 40px 0;
-text-align: center;
-transition: background-color 0.3s ease;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 35px 0;
+  text-align: center;
 }
+
 .copyright {
-font-size: 1rem;
-color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
-/* Current Filter Badge */
+
+.copyright a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.copyright a:hover {
+  color: var(--text-primary);
+}
+
+/* Current Filter Badge - Minimal */
 .current-filter {
-display: inline-block;
-background-color: var(--accent-color);
-color: white;
-padding: 8px 20px;
-border-radius: 25px;
-font-weight: 600;
-margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 7px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
 }
-.current-filter i {
-margin-right: 8px;
-}
+
 .clear-filter {
-margin-left: 10px;
-cursor: pointer;
-opacity: 0.8;
-transition: var(--transition);
+  margin-left: 10px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: var(--transition);
 }
+
 .clear-filter:hover {
-opacity: 1;
+  opacity: 1;
 }
-/* Share Buttons */
+
+/* Share Buttons - Minimal */
 .share-buttons {
-display: flex;
-gap: 10px;
-margin-top: 30px;
-padding-top: 20px;
-border-top: 2px solid var(--light-color);
+  display: flex;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  justify-content: center;
+  flex-wrap: wrap;
 }
+
 .share-btn {
-width: 40px;
-height: 40px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-border: none;
-cursor: pointer;
-transition: var(--transition);
-color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-tertiary);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
-.share-btn.facebook {
-background-color: #3b5998;
-}
-.share-btn.twitter {
-background-color: #1da1f2;
-}
-.share-btn.linkedin {
-background-color: #0077b5;
-}
-.share-btn.whatsapp {
-background-color: #25d366;
-}
+
 .share-btn:hover {
-transform: scale(1.1);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
+
+/* Tags - Minimal */
+.blog-tags {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.blog-tags .badge {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition);
+}
+
+.blog-tags .badge:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text-secondary);
+  border-color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 992px) {
-.blog-container {
-grid-template-columns: 1fr;
+  .blog-container {
+    grid-template-columns: 1fr;
+  }
+  .archive-sidebar {
+    position: static;
+    margin-bottom: 28px;
+  }
+  .page-title { font-size: 2.3rem; }
+  .section-title { font-size: 1.6rem; }
+  .blog-title { font-size: 1.3rem; }
+  .single-post-title { font-size: 1.8rem; }
+  .post-actions {
+    position: static;
+    margin-top: 12px;
+    opacity: 1;
+    justify-content: flex-end;
+  }
+  .admin-info {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .navbar-search-input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .ql-editor iframe {
+    height: 340px !important;
+  }
+  .single-post-content iframe {
+    height: 380px;
+  }
+  .featured-image {
+    height: 240px;
+  }
 }
-.archive-sidebar {
-position: static;
-margin-bottom: 30px;
-}
-.page-title { font-size: 2.8rem; }
-.section-title { font-size: 2rem; }
-.blog-title { font-size: 1.6rem; }
-.single-post-title { font-size: 2rem; }
-.post-actions {
-position: static;
-margin-top: 15px;
-opacity: 1;
-}
-.admin-info {
-flex-direction: column;
-align-items: flex-start;
-gap: 5px;
-}
-.navbar-search-input {
-width: 100%;
-margin-bottom: 10px;
-}
-.ql-editor iframe {
-height: 400px !important;
-}
-.single-post-content iframe {
-height: 450px;
-}
-}
+
 @media (max-width: 768px) {
-.hero-section { padding: 80px 0 50px; }
-.page-title { font-size: 2.2rem; }
-.page-subtitle { font-size: 1.2rem; }
-.blog-section { padding: 60px 0; }
-.section-title { font-size: 1.8rem; margin-bottom: 40px; }
-.blog-card { padding: 25px; }
-.create-post-btn {
-bottom: 20px;
-right: 20px;
-width: 50px;
-height: 50px;
+  .hero-section { padding: 70px 0 45px; }
+  .page-title { font-size: 1.9rem; }
+  .page-subtitle { font-size: 1.05rem; }
+  .blog-section { padding: 55px 0; }
+  .section-title { font-size: 1.5rem; margin-bottom: 38px; }
+  .blog-card { padding: 20px; }
+  .create-post-btn {
+    bottom: 22px;
+    right: 22px;
+    width: 48px;
+    height: 48px;
+  }
+  .blog-video {
+    height: 260px;
+  }
+  .ql-container {
+    min-height: 260px;
+  }
+  .single-post-title { font-size: 1.7rem; }
+  .single-post-meta {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  .blog-content-preview {
+    -webkit-line-clamp: 3;
+    max-height: 75px;
+  }
+  .read-more-btn {
+    padding: 5px 14px;
+    font-size: 0.82rem;
+  }
+  .move-to-all-posts-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .featured-image {
+    height: 200px;
+  }
+  .media-upload-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .ql-editor iframe {
+    height: 300px !important;
+  }
+  .single-post-content iframe {
+    height: 300px;
+  }
+  .archive-sidebar {
+    padding: 18px;
+  }
 }
-.blog-video {
-height: 300px;
-}
-.ql-container {
-min-height: 250px;
-}
-.single-post-title { font-size: 1.8rem; }
-.single-post-meta {
-flex-direction: column;
-gap: 10px;
-}
-.blog-content-preview {
--webkit-line-clamp: 4;
-max-height: 120px;
-}
-.read-more-btn {
-padding: 5px 15px;
-font-size: 0.8rem;
-}
-.move-to-all-posts-btn {
-width: 100%;
-justify-content: center;
-}
-.featured-image {
-height: 250px;
-}
-.media-upload-btn {
-display: block;
-width: 100%;
-margin-bottom: 10px;
-}
-.ql-editor iframe {
-height: 350px !important;
-}
-.single-post-content iframe {
-height: 350px;
-}
-}
+
 @media (max-width: 576px) {
-.page-title { font-size: 1.8rem; }
-.nav-brand { font-size: 1.3rem; }
-.blog-title { font-size: 1.4rem; }
-.blog-meta {
-flex-direction: column;
-gap: 8px;
-}
-.blog-video {
-height: 250px;
-}
-.action-btn {
-width: 32px;
-height: 32px;
-font-size: 0.8rem;
-}
-.ql-toolbar.ql-snow .ql-formats {
-margin-right: 8px;
-}
-.featured-image {
-height: 200px;
-}
-.ql-editor iframe {
-height: 300px !important;
-}
-.single-post-content iframe {
-height: 300px;
-}
+  .page-title { font-size: 1.6rem; }
+  .nav-brand { font-size: 1.2rem; }
+  .blog-title { font-size: 1.25rem; }
+  .blog-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .blog-video {
+    height: 220px;
+  }
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+  }
+  .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 6px;
+  }
+  .featured-image {
+    height: 180px;
+  }
+  .ql-editor iframe {
+    height: 260px !important;
+  }
+  .single-post-content iframe {
+    height: 260px;
+  }
+  .hero-section {
+    padding: 60px 0 40px;
+  }
+  .section-title {
+    font-size: 1.4rem;
+  }
+  .blog-card {
+    padding: 18px;
+  }
+  .single-post-title {
+    font-size: 1.5rem;
+  }
 }
 </style>
 </head>
@@ -984,7 +1187,9 @@ height: 300px;
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-custom">
 <div class="container">
-<a class="navbar-brand nav-brand" href="index.html" onclick="window.location.href='index.html'; return false;" aria-label="Home">Anil <span>Maharjan</span></a>
+<a class="navbar-brand nav-brand" href="index.html" onclick="window.location.href='index.html'; return false;" aria-label="Home">
+  Anil <span>Maharjan</span>
+</a>
 <button
 class="navbar-toggler"
 type="button"
@@ -1000,13 +1205,13 @@ aria-label="Toggle navigation"
 <ul class="navbar-nav ms-auto align-items-center">
 <!-- Search Input -->
 <li class="nav-item me-3">
-<input type="text" id="searchInput" class="navbar-search-input" placeholder="Search posts or tags...">
+<input type="text" id="searchInput" class="navbar-search-input" placeholder="Search...">
 </li>
 <li class="nav-item" id="authNav">
 <!-- Auth buttons will be inserted here dynamically -->
 </li>
 <li class="nav-item">
-<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
 <i class="fas fa-moon"></i>
 </button>
 </li>
@@ -1021,7 +1226,7 @@ aria-label="Toggle navigation"
 <div class="row">
 <div class="col-lg-10 mx-auto hero-content">
 <h1 class="page-title">My Blog</h1>
-<p class="page-subtitle">Thoughts, experiences, story and insights on productivity, and personal growth</p>
+<p class="page-subtitle">Thoughts on productivity, web development, and personal growth</p>
 </div>
 </div>
 </div>
@@ -1032,10 +1237,8 @@ aria-label="Toggle navigation"
 <div class="container">
 <h2 class="section-title">Latest Posts</h2>
 <div id="blogAlertContainer"></div>
-
 <!-- Current Filter Badge -->
 <div id="currentFilterBadge" style="display: none;"></div>
-
 <div class="blog-container">
 <!-- Blog Posts -->
 <div id="blogPostsContainer">
@@ -1046,22 +1249,20 @@ aria-label="Toggle navigation"
 <p>Loading posts...</p>
 </div>
 </div>
-
 <!-- Single Post View -->
 <div id="singlePostView" class="single-post-view">
 <button class="back-to-posts-btn" id="backToPostsBtn">
-<i class="fas fa-arrow-left"></i>Back to All Posts
+<i class="fas fa-arrow-left"></i> Back
 </button>
 <div id="singlePostContent"></div>
 </div>
 </div>
-
 <!-- Archive Sidebar -->
 <aside class="archive-sidebar">
-<h3 class="archive-title"><i class="fas fa-archive"></i>Archives</h3>
+<h3 class="archive-title"><i class="fas fa-archive"></i> Archives</h3>
 <div id="archiveListContainer">
 <div class="text-center">
-<div class="spinner" style="width: 30px; height: 30px;"></div>
+<div class="spinner" style="width: 28px; height: 28px;"></div>
 </div>
 </div>
 </aside>
@@ -1075,34 +1276,34 @@ aria-label="Toggle navigation"
 </button>
 
 <!-- Admin Login Modal -->
-<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-hidden="true" aria-labelledby="adminLoginModalLabel">
+<div class="modal fade" id="adminLoginModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered login-modal">
 <div class="modal-content">
 <div class="modal-header border-0 pb-0">
-<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
 </div>
 <div class="modal-body">
 <div class="login-header">
 <i class="fas fa-user-shield"></i>
 <h3>Admin Login</h3>
-<p>Sign in to manage blog posts</p>
+<p>Sign in to manage posts</p>
 </div>
 <div id="loginAlertContainer"></div>
 <form id="adminLoginForm">
 <div class="mb-3">
-<label for="adminEmail" class="form-label">Email Address</label>
-<input type="email" class="form-control-custom" id="adminEmail" required placeholder="admin@yourdomain.com">
+<label for="adminEmail" class="form-label">Email</label>
+<input type="email" class="form-control-custom" id="adminEmail" required placeholder="admin@example.com">
 </div>
 <div class="mb-3">
 <label for="adminPassword" class="form-label">Password</label>
-<input type="password" class="form-control-custom" id="adminPassword" required placeholder="Enter your password">
+<input type="password" class="form-control-custom" id="adminPassword" required placeholder="••••••••">
 </div>
 <div class="mb-3 form-check">
-<input type="checkbox" class="form-check-input" id="rememberAdmin">
-<label class="form-check-label" for="rememberAdmin">Remember me</label>
+<input type="checkbox" class="form-check-input" id="rememberAdmin" style="background-color: var(--bg-tertiary); border-color: var(--border-color);">
+<label class="form-check-label" for="rememberAdmin" style="color: var(--text-secondary);">Remember me</label>
 </div>
 <button type="submit" class="submit-btn" id="submitAdminLoginBtn">
-<i class="fas fa-sign-in-alt me-2"></i>Sign In
+Sign In
 </button>
 </form>
 </div>
@@ -1111,71 +1312,56 @@ aria-label="Toggle navigation"
 </div>
 
 <!-- Create/Edit Post Modal -->
-<div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true" aria-labelledby="postModalLabel">
+<div class="modal fade" id="postModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-lg">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="postModalLabel">Create New Post</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal-content" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+<div class="modal-header" style="border-bottom-color: var(--border-color);">
+<h5 class="modal-title" id="postModalLabel" style="color: var(--text-primary);">Create New Post</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
 </div>
 <div class="modal-body">
 <div id="formAlertContainer"></div>
 <form id="postForm">
 <input type="hidden" id="postId">
 <div class="mb-3">
-<label for="postTitle" class="form-label">Post Title *</label>
-<input type="text" class="form-control-custom" id="postTitle" required placeholder="Enter post title">
+<label for="postTitle" class="form-label">Title *</label>
+<input type="text" class="form-control-custom" id="postTitle" required placeholder="Post title">
 </div>
 <div class="mb-3">
-<label for="featuredImage" class="form-label">
-<i class="fas fa-image me-2"></i>Featured Image URL (optional)
-</label>
-<input type="url" class="form-control-custom" id="featuredImage" placeholder="https://example.com/featured-image.jpg">
-<small class="text-muted"><i class="fas fa-info-circle me-1"></i>This image will be displayed at the top of your post</small>
+<label for="featuredImage" class="form-label">Featured Image URL</label>
+<input type="url" class="form-control-custom" id="featuredImage" placeholder="https://...">
 </div>
 <div class="mb-3">
 <label for="postContent" class="form-label">Content *</label>
-<div id="quillEditor">
-<p><br></p>
-</div>
+<div id="quillEditor"></div>
 <input type="hidden" id="postContent" name="postContent" required>
-<!-- Image & Video Upload Options -->
 <div class="mt-2">
 <button type="button" class="media-upload-btn" id="insertImageUrlBtn">
-<i class="fas fa-link me-2"></i>Insert Image from URL
+<i class="fas fa-link me-1"></i> Image URL
 </button>
-<button type="button" class="media-upload-btn" id="uploadImageBtn" style="background-color: var(--primary-color);">
-<i class="fas fa-upload me-2"></i>Upload Image from Computer
+<button type="button" class="media-upload-btn" id="uploadImageBtn">
+<i class="fas fa-upload me-1"></i> Upload
 </button>
-<button type="button" class="media-upload-btn video-btn" id="insertVideoUrlBtn">
-<i class="fas fa-video me-2"></i>Insert Video from URL
+<button type="button" class="media-upload-btn" id="insertVideoUrlBtn">
+<i class="fas fa-video me-1"></i> Video URL
 </button>
 </div>
 <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
 </div>
 <div class="mb-3">
-<label for="postImage" class="form-label">
-<i class="fas fa-images me-2"></i>Additional Image URL (optional)
-</label>
-<input type="url" class="form-control-custom" id="postImage" placeholder="https://example.com/image.jpg">
-<small class="text-muted">Additional image to display within the post content</small>
+<label for="postImage" class="form-label">Additional Image URL</label>
+<input type="url" class="form-control-custom" id="postImage" placeholder="https://...">
 </div>
 <div class="mb-3">
-<label for="postVideo" class="form-label">
-<i class="fab fa-youtube me-2"></i>YouTube Video ID (optional)
-</label>
-<input type="text" class="form-control-custom" id="postVideo" placeholder="Enter YouTube video ID (e.g., dQw4w9WgXcQ)">
-<small class="text-muted">Only YouTube videos supported</small>
+<label for="postVideo" class="form-label">YouTube Video ID</label>
+<input type="text" class="form-control-custom" id="postVideo" placeholder="dQw4w9WgXcQ">
 </div>
 <div class="mb-3">
-<label for="postTags" class="form-label">
-<i class="fas fa-tags me-2"></i>Tags (optional)
-</label>
-<input type="text" class="form-control-custom" id="postTags" placeholder="tag1, tag2, tag3">
-<small class="text-muted">Separate tags with commas</small>
+<label for="postTags" class="form-label">Tags</label>
+<input type="text" class="form-control-custom" id="postTags" placeholder="tag1, tag2">
 </div>
 <button type="submit" class="submit-btn" id="submitPostBtn">
-<i class="fas fa-paper-plane me-2"></i>Publish Post
+Publish Post
 </button>
 </form>
 </div>
@@ -1184,21 +1370,21 @@ aria-label="Toggle navigation"
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true" aria-labelledby="deleteConfirmModalLabel">
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal-content" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+<div class="modal-header" style="border-bottom-color: var(--border-color);">
+<h5 class="modal-title" id="deleteConfirmModalLabel" style="color: var(--text-primary);">Confirm Delete</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
 </div>
 <div class="modal-body text-center">
-<i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #dc3545; margin-bottom: 20px;"></i>
-<p class="lead">Are you sure you want to delete this post?</p>
-<p class="text-muted">This action cannot be undone.</p>
+<i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+<p class="lead" style="color: var(--text-primary);">Delete this post?</p>
+<p class="text-muted">This cannot be undone.</p>
 </div>
-<div class="modal-footer justify-content-center">
-<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-<button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Post</button>
+<div class="modal-footer justify-content-center" style="border-top-color: var(--border-color);">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: var(--bg-tertiary); border-color: var(--border-color); color: var(--text-primary);">Cancel</button>
+<button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="background-color: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">Delete</button>
 </div>
 </div>
 </div>
@@ -1279,10 +1465,6 @@ let storage = null;
 document.getElementById('currentYear').textContent = new Date().getFullYear();
 
 // === THEME SYSTEM ===
-if (html.dataset.initialTheme === 'dark') {
-icon.className = 'fas fa-sun';
-}
-
 function applyTheme(theme) {
 html.setAttribute('data-theme', theme);
 icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
@@ -1290,8 +1472,8 @@ localStorage.setItem('theme', theme);
 if (quill) {
 const editor = document.querySelector('.ql-editor');
 if (editor) {
-editor.style.backgroundColor = theme === 'dark' ? '#2d3748' : '#ffffff';
-editor.style.color = theme === 'dark' ? '#e2e8f0' : '#333333';
+editor.style.backgroundColor = theme === 'dark' ? '#1a1a1a' : '#ffffff';
+editor.style.color = theme === 'dark' ? '#f5f5f5' : '#1a1a1a';
 }
 }
 window.dispatchEvent(new CustomEvent('themeChanged', { detail: theme }));
@@ -1323,7 +1505,7 @@ blogAlertContainer.appendChild(alertDiv);
 alertDiv.style.display = 'block';
 setTimeout(() => {
 alertDiv.style.display = 'none';
-}, 5000);
+}, 4000);
 }
 
 function showFormAlert(message, type = 'error', container = formAlertContainer) {
@@ -1335,16 +1517,11 @@ container.appendChild(alertDiv);
 alertDiv.style.display = 'block';
 setTimeout(() => {
 alertDiv.style.display = 'none';
-}, 5000);
+}, 4000);
 }
 
-// Initialize Firebase
 function initializeFirebase() {
 try {
-if (firebaseConfig.apiKey === "AIzaSyC..." ||
-firebaseConfig.projectId === "your-project-id") {
-throw new Error("Firebase config not updated! Please replace with your actual Firebase config values.");
-}
 if (!firebase.apps.length) {
 firebase.initializeApp(firebaseConfig);
 }
@@ -1354,24 +1531,16 @@ storage = firebase.storage();
 auth.onAuthStateChanged(user => {
 currentUser = user;
 updateAuthUI();
-if (user) {
-console.log('✅ Admin signed in:', user.email);
 loadBlogPosts();
-} else {
-console.log('❌ Admin not signed in');
-loadBlogPosts();
-}
 });
 firebaseInitialized = true;
-console.log('✅ Firebase initialized successfully');
 } catch (error) {
-console.error('❌ Firebase setup error:', error);
-showBlogAlert(`Configuration error: ${error.message}`, 'error');
+console.error('Firebase error:', error);
+showBlogAlert('Config error: ' + error.message, 'error');
 firebaseInitialized = false;
 }
 }
 
-// Update auth UI based on user state
 function updateAuthUI() {
 if (currentUser) {
 const displayName = currentUser.displayName || currentUser.email.split('@')[0];
@@ -1386,9 +1555,7 @@ authNav.innerHTML = `
 createPostBtn.style.display = 'flex';
 document.getElementById('logoutBtn').addEventListener('click', signOutAdmin);
 } else {
-authNav.innerHTML = `
-<button class="admin-btn" id="adminLoginBtn">Admin Login</button>
-`;
+authNav.innerHTML = `<button class="admin-btn" id="adminLoginBtn">Login</button>`;
 createPostBtn.style.display = 'none';
 document.getElementById('adminLoginBtn').addEventListener('click', () => {
 new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
@@ -1396,28 +1563,22 @@ new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
 }
 }
 
-// Sign in admin
 async function signInAdmin(email, password) {
 try {
-const userCredential = await auth.signInWithEmailAndPassword(email, password);
-const user = userCredential.user;
-console.log('✅ Admin authenticated:', user.email);
+await auth.signInWithEmailAndPassword(email, password);
 bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
 return true;
 } catch (error) {
-console.error('Admin sign-in error:', error);
 throw error;
 }
 }
 
-// Sign out
 async function signOutAdmin() {
 try {
 await auth.signOut();
-showBlogAlert('Signed out successfully!', 'success');
+showBlogAlert('Signed out', 'success');
 } catch (error) {
-console.error('Sign out error:', error);
-showBlogAlert('Sign out failed: ' + error.message, 'error');
+showBlogAlert('Sign out failed', 'error');
 }
 }
 
@@ -1426,28 +1587,21 @@ function initializeQuillEditor() {
 quill = new Quill('#quillEditor', {
 modules: {
 toolbar: [
-[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-['bold', 'italic', 'underline', 'strike'],
+[{ 'header': [1, 2, 3, false] }],
+['bold', 'italic', 'underline'],
 [{ 'color': [] }, { 'background': [] }],
-[{ 'font': [] }],
-[{ 'size': ['small', false, 'large', 'huge'] }],
 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
 [{ 'align': [] }],
-[{ 'indent': '-1'}, { 'indent': '+1' }],
-['blockquote', 'code-block'],
 ['link', 'image', 'video'],
-['clean'],
-['formula']
+['clean']
 ]
 },
 theme: 'snow',
-placeholder: 'Write your post content here...'
+placeholder: 'Write something...'
 });
-const savedContent = localStorage.getItem('quillContent');
-if (savedContent) {
-quill.root.innerHTML = savedContent;
-}
-quill.on('text-change', function() {
+const saved = localStorage.getItem('quillContent');
+if (saved) quill.root.innerHTML = saved;
+quill.on('text-change', () => {
 document.getElementById('postContent').value = quill.root.innerHTML;
 localStorage.setItem('quillContent', quill.root.innerHTML);
 });
@@ -1462,177 +1616,109 @@ document.getElementById('postContent').value = '';
 }
 }
 
-// === IMAGE & VIDEO UPLOAD FUNCTIONALITY ===
-// Insert image from URL
+// === MEDIA UPLOAD ===
 insertImageUrlBtn.addEventListener('click', () => {
-const imageUrl = prompt('Enter image URL:');
-if (imageUrl) {
+const url = prompt('Image URL:');
+if (url) {
 const range = quill.getSelection(true);
-quill.insertEmbed(range.index, 'image', imageUrl);
+quill.insertEmbed(range.index, 'image', url);
 quill.setSelection(range.index + 1);
 }
 });
 
-// Upload image from computer
-uploadImageBtn.addEventListener('click', () => {
-imageFileInput.click();
-});
+uploadImageBtn.addEventListener('click', () => imageFileInput.click());
 
 imageFileInput.addEventListener('change', async (e) => {
 const file = e.target.files[0];
-if (!file) return;
-
-// Validate file type
-if (!file.type.startsWith('image/')) {
-showFormAlert('Please select a valid image file!', 'error');
+if (!file || !file.type.startsWith('image/') || file.size > 5*1024*1024) {
+showFormAlert('Invalid image (max 5MB)', 'error');
 return;
 }
-
-// Validate file size (max 5MB)
-if (file.size > 5 * 1024 * 1024) {
-showFormAlert('Image size must be less than 5MB!', 'error');
-return;
-}
-
-// Show loading state
-const originalBtnText = uploadImageBtn.innerHTML;
+const original = uploadImageBtn.innerHTML;
 uploadImageBtn.disabled = true;
-uploadImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
-
+uploadImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 try {
-// Upload to Firebase Storage
-const storageRef = storage.ref();
-const imageRef = storageRef.child(`blog-images/${Date.now()}_${file.name}`);
-const uploadTask = await imageRef.put(file);
-const downloadURL = await uploadTask.ref.getDownloadURL();
-
-// Insert image into editor
+const ref = storage.ref(`blog-images/${Date.now()}_${file.name}`);
+await ref.put(file);
+const url = await ref.getDownloadURL();
 const range = quill.getSelection(true);
-quill.insertEmbed(range.index, 'image', downloadURL);
+quill.insertEmbed(range.index, 'image', url);
 quill.setSelection(range.index + 1);
-
-showFormAlert('Image uploaded successfully!', 'success');
-} catch (error) {
-console.error('Image upload error:', error);
-showFormAlert('Failed to upload image: ' + error.message, 'error');
+showFormAlert('Uploaded!', 'success');
+} catch (err) {
+showFormAlert('Upload failed: ' + err.message, 'error');
 } finally {
 uploadImageBtn.disabled = false;
-uploadImageBtn.innerHTML = originalBtnText;
+uploadImageBtn.innerHTML = original;
 imageFileInput.value = '';
 }
 });
 
-// Insert video from URL
 insertVideoUrlBtn.addEventListener('click', () => {
-const videoUrl = prompt('Enter video URL (YouTube, Vimeo, or direct video link):');
-if (videoUrl) {
+const url = prompt('Video URL:');
+if (url) {
+let embed = url;
+const yt = url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^&?\/]{11})/);
+if (yt) embed = `https://www.youtube.com/embed/${yt[1]}`;
 const range = quill.getSelection(true);
-
-// Extract video ID for YouTube/Vimeo or use direct URL
-let embedUrl = videoUrl;
-
-// YouTube URL handling
-const youtubeMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-if (youtubeMatch) {
-embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
-}
-
-// Vimeo URL handling
-const vimeoMatch = videoUrl.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:\w+\/)?|album\/(?:\d+\/)?video\/|)(\d+)(?:$|\/|\?)/);
-if (vimeoMatch) {
-embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-}
-
-// Insert video into editor
-quill.insertEmbed(range.index, 'video', embedUrl);
+quill.insertEmbed(range.index, 'video', embed);
 quill.setSelection(range.index + 1);
-
-showFormAlert('Video inserted successfully!', 'success');
 }
 });
 
-// === ARCHIVE FUNCTIONALITY ===
+// === ARCHIVES ===
 function getMonthYearKey(date) {
-const months = ['January', 'February', 'March', 'April', 'May', 'June',
-'July', 'August', 'September', 'October', 'November', 'December'];
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 return {
-key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-display: `${months[date.getMonth()]} ${date.getFullYear()}`,
-year: date.getFullYear(),
-month: date.getMonth()
+key: `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`,
+display: `${months[date.getMonth()]} ${date.getFullYear()}`
 };
 }
 
 function groupPostsByArchive(posts) {
-const archiveMap = {};
-posts.forEach(post => {
-const date = post.createdAt ? post.createdAt.toDate() : new Date();
-const { key, display } = getMonthYearKey(date);
-if (!archiveMap[key]) {
-archiveMap[key] = { display, count: 0, posts: [] };
-}
-archiveMap[key].count++;
-archiveMap[key].posts.push(post);
+const map = {};
+posts.forEach(p => {
+const d = p.createdAt?.toDate?.() || new Date();
+const {key, display} = getMonthYearKey(d);
+if (!map[key]) map[key] = {display, count: 0, posts: []};
+map[key].count++;
+map[key].posts.push(p);
 });
-return Object.entries(archiveMap)
-.sort((a, b) => b[0].localeCompare(a[0]))
-.map(([key, data]) => ({ key, ...data }));
+return Object.entries(map).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,v])=>({key:k,...v}));
 }
 
-function renderArchiveList(archiveData) {
-if (archiveData.length === 0) {
-archiveListContainer.innerHTML = `
-<div class="text-center text-muted">
-<i class="fas fa-archive" style="font-size: 2rem; margin-bottom: 10px;"></i>
-<p>No archives yet</p>
-</div>
-`;
+function renderArchiveList(data) {
+if (!data.length) {
+archiveListContainer.innerHTML = '<p class="text-muted text-center">No archives</p>';
 return;
 }
 let html = '<ul class="archive-list">';
-archiveData.forEach(archive => {
-const isActive = currentArchiveFilter === archive.key;
-html += `
-<li class="archive-item">
-<div class="archive-link ${isActive ? 'active' : ''}" data-archive-key="${archive.key}">
-<span><i class="far fa-calendar-alt me-2"></i>${archive.display}</span>
-<span class="archive-count">${archive.count}</span>
-</div>
-</li>
-`;
+data.forEach(a => {
+const active = currentArchiveFilter === a.key;
+html += `<li><div class="archive-link ${active?'active':''}" data-key="${a.key}"><span>${a.display}</span><span class="archive-count">${a.count}</span></div></li>`;
 });
 html += '</ul>';
 archiveListContainer.innerHTML = html;
-
-document.querySelectorAll('.archive-link').forEach(link => {
-link.addEventListener('click', () => {
-const archiveKey = link.getAttribute('data-archive-key');
-filterByArchive(archiveKey);
-});
+document.querySelectorAll('.archive-link').forEach(l => {
+l.addEventListener('click', () => filterByArchive(l.dataset.key));
 });
 }
 
-function filterByArchive(archiveKey) {
-if (currentArchiveFilter === archiveKey) {
+function filterByArchive(key) {
+if (currentArchiveFilter === key) {
 currentArchiveFilter = null;
 currentFilterBadge.style.display = 'none';
 } else {
-currentArchiveFilter = archiveKey;
-const archive = allPosts.find(p => {
-const date = p.createdAt ? p.createdAt.toDate() : new Date();
-const { key } = getMonthYearKey(date);
-return key === archiveKey;
+currentArchiveFilter = key;
+const p = allPosts.find(x => {
+const d = x.createdAt?.toDate?.() || new Date();
+return getMonthYearKey(d).key === key;
 });
-if (archive) {
-const { display } = getMonthYearKey(archive.createdAt ? archive.createdAt.toDate() : new Date());
-currentFilterBadge.innerHTML = `
-<span class="current-filter">
-<i class="fas fa-filter"></i>Showing: ${display}
-<span class="clear-filter" id="clearArchiveFilter"><i class="fas fa-times"></i></span>
-</span>
-`;
+if (p) {
+const {display} = getMonthYearKey(p.createdAt?.toDate?.() || new Date());
+currentFilterBadge.innerHTML = `<span class="current-filter">Filter: ${display} <span class="clear-filter" id="clearArch"><i class="fas fa-times"></i></span></span>`;
 currentFilterBadge.style.display = 'block';
-document.getElementById('clearArchiveFilter').addEventListener('click', () => {
+document.getElementById('clearArch')?.addEventListener('click', () => {
 currentArchiveFilter = null;
 currentFilterBadge.style.display = 'none';
 renderBlogPosts(allPosts);
@@ -1640,317 +1726,138 @@ updateArchiveUI();
 });
 }
 }
-const filteredPosts = currentArchiveFilter
-? allPosts.filter(p => {
-const date = p.createdAt ? p.createdAt.toDate() : new Date();
-const { key } = getMonthYearKey(date);
-return key === currentArchiveFilter;
-})
-: allPosts;
-renderBlogPosts(filteredPosts);
+const filtered = currentArchiveFilter ? allPosts.filter(p => {
+const d = p.createdAt?.toDate?.() || new Date();
+return getMonthYearKey(d).key === currentArchiveFilter;
+}) : allPosts;
+renderBlogPosts(filtered);
 updateArchiveUI();
 }
 
 function updateArchiveUI() {
-document.querySelectorAll('.archive-link').forEach(link => {
-const key = link.getAttribute('data-archive-key');
-if (key === currentArchiveFilter) {
-link.classList.add('active');
-} else {
-link.classList.remove('active');
-}
+document.querySelectorAll('.archive-link').forEach(l => {
+l.classList.toggle('active', l.dataset.key === currentArchiveFilter);
 });
 }
 
-// === BLOG FUNCTIONALITY ===
+// === BLOG ===
 async function loadBlogPosts() {
-if (!firebaseInitialized || !db) {
-blogListView.innerHTML = `
-<div class="alert alert-warning">
-<i class="fas fa-exclamation-triangle me-2"></i>
-Firebase not initialized. Please check console for errors.
-</div>
-`;
-return;
-}
+if (!firebaseInitialized || !db) return;
 try {
-blogListView.innerHTML = `
-<div class="text-center">
-<div class="spinner"></div>
-<p>Loading posts...</p>
-</div>
-`;
-const postsRef = db.collection('blogPosts').orderBy('createdAt', 'desc');
-const snapshot = await postsRef.get();
-if (snapshot.empty) {
-blogListView.innerHTML = `
-<div class="no-posts">
-<i class="fas fa-inbox"></i>
-<h3>No posts yet</h3>
-<p>Be the first to share your thoughts!</p>
-</div>
-`;
-archiveListContainer.innerHTML = `
-<div class="text-center text-muted">
-<p>No archives yet</p>
-</div>
-`;
+blogListView.innerHTML = '<div class="text-center"><div class="spinner"></div><p>Loading...</p></div>';
+const snap = await db.collection('blogPosts').orderBy('createdAt','desc').get();
+if (snap.empty) {
+blogListView.innerHTML = '<div class="no-posts"><i class="fas fa-inbox"></i><h3>No posts</h3><p>Be the first!</p></div>';
+archiveListContainer.innerHTML = '<p class="text-muted text-center">No archives</p>';
 return;
 }
 allPosts = [];
-snapshot.forEach(doc => {
-allPosts.push({ id: doc.id, ...doc.data() });
-});
-const archiveData = groupPostsByArchive(allPosts);
-renderArchiveList(archiveData);
+snap.forEach(doc => allPosts.push({id: doc.id, ...doc.data()}));
+renderArchiveList(groupPostsByArchive(allPosts));
 renderBlogPosts(allPosts);
-} catch (error) {
-console.error('Error loading posts:', error);
-blogListView.innerHTML = `
-<div class="alert alert-danger">
-<i class="fas fa-exclamation-triangle me-2"></i>
-<strong>Error:</strong> ${error.message}<br>
-<small>Check Firestore Rules and Firebase config</small>
-</div>
-`;
+} catch (err) {
+console.error(err);
+blogListView.innerHTML = `<div class="alert-custom alert-error"><i class="fas fa-exclamation-triangle"></i> ${err.message}</div>`;
 }
 }
 
-// Strip HTML tags and get plain text
-function stripHtmlTags(html) {
-const tempDiv = document.createElement('div');
-tempDiv.innerHTML = html;
-return tempDiv.textContent || tempDiv.innerText || '';
+function stripHtml(html) {
+const d = document.createElement('div');
+d.innerHTML = html;
+return d.textContent || d.innerText || '';
 }
 
-// Get content preview with more text
-function getContentPreview(content, charLimit = 400) {
-const plainText = stripHtmlTags(content);
-if (plainText.length <= charLimit) {
-return plainText;
-}
-let preview = plainText.substring(0, charLimit);
-const lastPeriod = preview.lastIndexOf('.');
-if (lastPeriod > charLimit * 0.7) {
-preview = preview.substring(0, lastPeriod + 1);
-}
-return preview.trim() + '...';
+function getPreview(content, limit = 350) {
+const text = stripHtml(content);
+if (text.length <= limit) return text;
+let p = text.slice(0, limit);
+const lastDot = p.lastIndexOf('.');
+if (lastDot > limit * 0.6) p = p.slice(0, lastDot + 1);
+return p.trim() + '...';
 }
 
 function renderBlogPosts(posts) {
-if (posts.length === 0) {
-blogListView.innerHTML = `
-<div class="no-posts">
-<i class="fas fa-search"></i>
-<h3>No posts found</h3>
-<p>Try a different filter or search term</p>
-</div>
-`;
+if (!posts.length) {
+blogListView.innerHTML = '<div class="no-posts"><i class="fas fa-search"></i><h3>No results</h3></div>';
 return;
 }
-let postsHTML = '';
-posts.forEach(post => {
-const postId = post.id;
-const date = post.createdAt ? post.createdAt.toDate() : new Date();
-const formattedDate = date.toLocaleDateString('en-US', {
-year: 'numeric',
-month: 'long',
-day: 'numeric'
-});
-// Featured image for blog list
-let featuredImageHTML = '';
-if (post.featuredImage) {
-featuredImageHTML = `<img src="${post.featuredImage}" alt="${post.title}" class="featured-image">`;
-}
-let mediaHTML = '';
-if (post.imageUrl) {
-mediaHTML = `<img src="${post.imageUrl}" alt="Post image" class="blog-image">`;
-}
-if (post.videoId) {
-mediaHTML = `
-<div class="ratio ratio-16x9 blog-video">
-<iframe src="https://www.youtube.com/embed/${post.videoId}"
-frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-allowfullscreen>
-</iframe>
-</div>
-`;
-}
-const tagsHTML = post.tags && post.tags.length > 0
-? `<div class="blog-tags mt-3">
-${post.tags.map(tag => `<span class="badge bg-secondary me-2">#${tag}</span>`).join('')}
-</div>`
-: '';
-const actionsHTML = currentUser ? `
-<div class="post-actions">
-<button class="action-btn edit-btn" data-post-id="${postId}" title="Edit post">
-<i class="fas fa-edit"></i>
-</button>
-<button class="action-btn delete-btn" data-post-id="${postId}" title="Delete post">
-<i class="fas fa-trash"></i>
-</button>
-</div>
-` : '';
-const contentPreview = getContentPreview(post.content, 400);
-postsHTML += `
-<div class="blog-card" data-post-id="${postId}">
-${actionsHTML}
+let html = '';
+posts.forEach(p => {
+const id = p.id;
+const d = p.createdAt?.toDate?.() || new Date();
+const date = d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+const featured = p.featuredImage ? `<img src="${p.featuredImage}" alt="${p.title}" class="featured-image">` : '';
+let media = '';
+if (p.imageUrl) media = `<img src="${p.imageUrl}" class="blog-image">`;
+if (p.videoId) media = `<div class="ratio ratio-16x9 blog-video"><iframe src="https://www.youtube.com/embed/${p.videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+const tags = p.tags?.length ? `<div class="blog-tags">${p.tags.map(t=>`<span class="badge">#${t}</span>`).join('')}</div>` : '';
+const actions = currentUser ? `<div class="post-actions"><button class="action-btn edit-btn" data-id="${id}"><i class="fas fa-edit"></i></button><button class="action-btn delete-btn" data-id="${id}"><i class="fas fa-trash"></i></button></div>` : '';
+html += `
+<div class="blog-card" data-id="${id}">
+${actions}
 <div class="blog-header">
 <div class="blog-meta">
-<span><i class="fas fa-calendar"></i> ${formattedDate}</span>
-<span><i class="fas fa-user"></i> ${post.authorName || 'Admin'}</span>
-${currentUser ? '<span class="admin-badge"><i class="fas fa-user-shield"></i> Admin</span>' : ''}
+<span><i class="fas fa-calendar"></i> ${date}</span>
+<span><i class="fas fa-user"></i> ${p.authorName||'Admin'}</span>
+${currentUser?'<span class="admin-badge">Admin</span>':''}
 </div>
 </div>
-${featuredImageHTML}
-<h3 class="blog-title" data-post-id="${postId}" title="Click to read full post">
-${post.title}
-</h3>
-<div class="blog-content blog-content-preview">
-${contentPreview}
-</div>
-${mediaHTML ? `<div style="margin-top: 15px;"><span class="badge bg-primary"><i class="fas fa-image me-1"></i>Has Media</span></div>` : ''}
-${tagsHTML}
-<button class="read-more-btn" data-post-id="${postId}" title="Read full post">
-Read More <i class="fas fa-arrow-right"></i>
-</button>
-</div>
-`;
+${featured}
+<h3 class="blog-title" data-id="${id}">${p.title}</h3>
+<div class="blog-content blog-content-preview">${getPreview(p.content)}</div>
+${media ? '<div style="margin-top:12px"><span class="badge">Has media</span></div>' : ''}
+${tags}
+<button class="read-more-btn" data-id="${id}">Read <i class="fas fa-arrow-right"></i></button>
+</div>`;
 });
-blogListView.innerHTML = postsHTML;
-
-document.querySelectorAll('.blog-title').forEach(title => {
-title.addEventListener('click', (e) => {
-e.stopPropagation();
-const postId = title.getAttribute('data-post-id');
-openSinglePost(postId);
+blogListView.innerHTML = html;
+document.querySelectorAll('.blog-title, .read-more-btn').forEach(el => {
+el.addEventListener('click', e => { e.stopPropagation(); openSinglePost(el.dataset.id); });
 });
-});
-
-document.querySelectorAll('.read-more-btn').forEach(btn => {
-btn.addEventListener('click', (e) => {
-e.stopPropagation();
-const postId = btn.getAttribute('data-post-id');
-openSinglePost(postId);
-});
-});
-
 document.querySelectorAll('.edit-btn').forEach(btn => {
-btn.addEventListener('click', (e) => {
-e.stopPropagation();
-const postId = btn.getAttribute('data-post-id');
-openEditModal(postId);
-});
+btn.addEventListener('click', e => { e.stopPropagation(); openEditModal(btn.dataset.id); });
 });
 document.querySelectorAll('.delete-btn').forEach(btn => {
-btn.addEventListener('click', (e) => {
-e.stopPropagation();
-const postId = btn.getAttribute('data-post-id');
-openDeleteConfirm(postId);
-});
+btn.addEventListener('click', e => { e.stopPropagation(); openDeleteConfirm(btn.dataset.id); });
 });
 }
 
-// === SINGLE POST VIEW ===
-function openSinglePost(postId) {
-const post = allPosts.find(p => p.id === postId);
-if (!post) {
-showBlogAlert('Post not found!', 'error');
-return;
-}
-currentPostData = post;
-const date = post.createdAt ? post.createdAt.toDate() : new Date();
-const formattedDate = date.toLocaleDateString('en-US', {
-year: 'numeric',
-month: 'long',
-day: 'numeric'
-});
-// Featured image at the top of single post
-let featuredImageHTML = '';
-if (post.featuredImage) {
-featuredImageHTML = `<img src="${post.featuredImage}" alt="${post.title}" class="featured-image">`;
-}
-let mediaHTML = '';
-if (post.imageUrl) {
-mediaHTML = `<img src="${post.imageUrl}" alt="Post image" class="blog-image">`;
-}
-if (post.videoId) {
-mediaHTML = `
-<div class="ratio ratio-16x9 blog-video">
-<iframe src="https://www.youtube.com/embed/${post.videoId}"
-frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-allowfullscreen>
-</iframe>
-</div>
-`;
-}
-const tagsHTML = post.tags && post.tags.length > 0
-? `<div class="blog-tags mt-4">
-<h5><i class="fas fa-tags me-2"></i>Tags:</h5>
-${post.tags.map(tag => `<span class="badge bg-secondary me-2">#${tag}</span>`).join('')}
-</div>`
-: '';
-const adminActionsHTML = currentUser ? `
-<div class="admin-actions mt-4" style="display: flex; gap: 10px;">
-<button class="btn btn-primary" onclick="openEditModal('${postId}')">
-<i class="fas fa-edit me-2"></i>Edit Post
-</button>
-<button class="btn btn-danger" onclick="openDeleteConfirm('${postId}')">
-<i class="fas fa-trash me-2"></i>Delete Post
-</button>
-</div>
-` : '';
-const shareButtonsHTML = `
-<div class="share-buttons">
-<h5 style="margin-right: 15px;"><i class="fas fa-share-alt me-2"></i>Share:</h5>
-<button class="share-btn facebook" onclick="sharePost('facebook')" title="Share on Facebook">
-<i class="fab fa-facebook-f"></i>
-</button>
-<button class="share-btn twitter" onclick="sharePost('twitter')" title="Share on Twitter">
-<i class="fab fa-twitter"></i>
-</button>
-<button class="share-btn linkedin" onclick="sharePost('linkedin')" title="Share on LinkedIn">
-<i class="fab fa-linkedin-in"></i>
-</button>
-<button class="share-btn whatsapp" onclick="sharePost('whatsapp')" title="Share on WhatsApp">
-<i class="fab fa-whatsapp"></i>
-</button>
-</div>
-`;
-const moveToAllPostsHTML = `
-<div style="text-align: center; margin-top: 40px;">
-<button class="move-to-all-posts-btn" id="moveToAllPostsBtn">
-<i class="fas fa-list-ul"></i>Move to All Posts
-</button>
-</div>
-`;
+// === SINGLE POST ===
+function openSinglePost(id) {
+const p = allPosts.find(x => x.id === id);
+if (!p) return showBlogAlert('Not found', 'error');
+currentPostData = p;
+const d = p.createdAt?.toDate?.() || new Date();
+const date = d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+const featured = p.featuredImage ? `<img src="${p.featuredImage}" alt="${p.title}" class="featured-image">` : '';
+let media = '';
+if (p.imageUrl) media = `<img src="${p.imageUrl}" class="blog-image">`;
+if (p.videoId) media = `<div class="ratio ratio-16x9 blog-video"><iframe src="https://www.youtube.com/embed/${p.videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+const tags = p.tags?.length ? `<div class="blog-tags mt-3">${p.tags.map(t=>`<span class="badge">#${t}</span>`).join('')}</div>` : '';
+const adminActions = currentUser ? `<div style="display:flex;gap:10px;margin-top:20px"><button class="submit-btn" onclick="openEditModal('${id}')" style="width:auto">Edit</button><button class="submit-btn" onclick="openDeleteConfirm('${id}')" style="width:auto;background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.3);color:#ef4444">Delete</button></div>` : '';
+const shares = `<div class="share-buttons"><button class="share-btn" onclick="share('fb')"><i class="fab fa-facebook-f"></i></button><button class="share-btn" onclick="share('tw')"><i class="fab fa-twitter"></i></button><button class="share-btn" onclick="share('li')"><i class="fab fa-linkedin-in"></i></button><button class="share-btn" onclick="share('wa')"><i class="fab fa-whatsapp"></i></button></div>`;
 singlePostContent.innerHTML = `
 <div class="single-post-header">
-<h1 class="single-post-title">${post.title}</h1>
+<h1 class="single-post-title">${p.title}</h1>
 <div class="single-post-meta">
-<span><i class="fas fa-calendar"></i> ${formattedDate}</span>
-<span><i class="fas fa-user"></i> ${post.authorName || 'Admin'}</span>
-<span><i class="fas fa-clock"></i> ${getReadTime(post.content)} min read</span>
+<span><i class="fas fa-calendar"></i> ${date}</span>
+<span><i class="fas fa-user"></i> ${p.authorName||'Admin'}</span>
+<span><i class="fas fa-clock"></i> ${Math.ceil(stripHtml(p.content).split(/\s+/).length/200)} min</span>
 </div>
 </div>
-${featuredImageHTML}
-<div class="single-post-content">
-${post.content}
-</div>
-${mediaHTML}
-${tagsHTML}
-${adminActionsHTML}
-${shareButtonsHTML}
-${moveToAllPostsHTML}
+${featured}
+<div class="single-post-content">${p.content}</div>
+${media}
+${tags}
+${adminActions}
+${shares}
+<div style="text-align:center;margin-top:30px"><button class="move-to-all-posts-btn" id="backAll"><i class="fas fa-list"></i> All Posts</button></div>
 `;
 blogListView.classList.add('hidden');
 singlePostView.classList.add('active');
-window.scrollTo({ top: 0, behavior: 'smooth' });
-window.location.hash = `post-${postId}`;
-
-document.getElementById('moveToAllPostsBtn').addEventListener('click', closeSinglePost);
+window.scrollTo({top:0,behavior:'smooth'});
+window.location.hash = `post-${id}`;
+document.getElementById('backAll')?.addEventListener('click', closeSinglePost);
 }
 
 function closeSinglePost() {
@@ -1960,301 +1867,170 @@ currentPostData = null;
 window.location.hash = '';
 }
 
-function getReadTime(content) {
-const text = content.replace(/<[^>]*>/g, '');
-const words = text.split(/\s+/).length;
-return Math.ceil(words / 200);
-}
-
-function sharePost(platform) {
+function share(plat) {
 if (!currentPostData) return;
 const url = encodeURIComponent(window.location.href);
-const title = encodeURIComponent(currentPostData.title);
-let shareUrl = '';
-switch(platform) {
-case 'facebook':
-shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-break;
-case 'twitter':
-shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-break;
-case 'linkedin':
-shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`;
-break;
-case 'whatsapp':
-shareUrl = `https://wa.me/?text=${title}%20${url}`;
-break;
-}
-if (shareUrl) {
-window.open(shareUrl, '_blank', 'width=600,height=400');
-}
+const t = encodeURIComponent(currentPostData.title);
+const links = {fb:`https://facebook.com/sharer/sharer.php?u=${url}`,tw:`https://twitter.com/intent/tweet?url=${url}&text=${t}`,li:`https://linkedin.com/shareArticle?url=${url}&title=${t}`,wa:`https://wa.me/?text=${t}%20${url}`};
+if (links[plat]) window.open(links[plat],'_blank','width=600,height=400');
 }
 
 backToPostsBtn.addEventListener('click', closeSinglePost);
 
 window.addEventListener('load', () => {
-const hash = window.location.hash;
-if (hash && hash.startsWith('#post-')) {
-const postId = hash.replace('#post-', '');
-setTimeout(() => {
-openSinglePost(postId);
-}, 1000);
-}
+const h = window.location.hash;
+if (h?.startsWith('#post-')) setTimeout(() => openSinglePost(h.replace('#post-','')), 800);
 });
 
-async function openEditModal(postId) {
-if (!currentUser) {
-showAdminLoginModal();
-return;
-}
+// === CRUD ===
+async function openEditModal(id) {
+if (!currentUser) return new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
 try {
-const postDoc = await db.collection('blogPosts').doc(postId).get();
-if (!postDoc.exists) {
-showFormAlert('Post not found!', 'error');
-return;
-}
-const post = postDoc.data();
-postIdInput.value = postId;
-document.getElementById('postTitle').value = post.title || '';
-document.getElementById('featuredImage').value = post.featuredImage || '';
-document.getElementById('postImage').value = post.imageUrl || '';
-document.getElementById('postVideo').value = post.videoId || '';
-document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
-if (quill) {
-quill.root.innerHTML = post.content || '<p><br></p>';
-localStorage.setItem('quillContent', post.content || '<p><br></p>');
-document.getElementById('postContent').value = post.content || '';
-}
+const doc = await db.collection('blogPosts').doc(id).get();
+if (!doc.exists) return showFormAlert('Not found', 'error');
+const p = doc.data();
+postIdInput.value = id;
+document.getElementById('postTitle').value = p.title || '';
+document.getElementById('featuredImage').value = p.featuredImage || '';
+document.getElementById('postImage').value = p.imageUrl || '';
+document.getElementById('postVideo').value = p.videoId || '';
+document.getElementById('postTags').value = p.tags?.join(', ') || '';
+if (quill) { quill.root.innerHTML = p.content || '<p><br></p>'; document.getElementById('postContent').value = p.content || ''; }
 postModalLabel.textContent = 'Edit Post';
-submitPostBtn.innerHTML = '<i class="fas fa-save me-2"></i>Update Post';
+submitPostBtn.innerHTML = 'Update';
 new bootstrap.Modal(document.getElementById('postModal')).show();
-} catch (error) {
-console.error('Error loading post for edit:', error);
-showFormAlert('Failed to load post: ' + error.message, 'error');
-}
+} catch (err) { showFormAlert('Error: ' + err.message, 'error'); }
 }
 
-async function savePost(postData, postId = null) {
-try {
-if (!firebaseInitialized || !db || !currentUser) {
-throw new Error('You must be signed in as admin to create/edit posts');
-}
-const postToSave = {
-...postData,
-authorId: currentUser.uid,
-authorName: currentUser.displayName || currentUser.email.split('@')[0],
-authorEmail: currentUser.email
-};
-if (postId) {
-await db.collection('blogPosts').doc(postId).update({
-...postToSave,
-updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-console.log('✅ Post updated with ID:', postId);
-} else {
-const docRef = await db.collection('blogPosts').add({
-...postToSave,
-createdAt: firebase.firestore.FieldValue.serverTimestamp()
-});
-console.log('✅ Post created with ID:', docRef.id);
-}
+async function savePost(data, id = null) {
+if (!db || !currentUser) throw new Error('Not authenticated');
+const post = {...data, authorId: currentUser.uid, authorName: currentUser.displayName||currentUser.email.split('@')[0], authorEmail: currentUser.email};
+if (id) await db.collection('blogPosts').doc(id).update({...post, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
+else await db.collection('blogPosts').add({...post, createdAt: firebase.firestore.FieldValue.serverTimestamp()});
 return true;
-} catch (error) {
-console.error('❌ Error saving post:', error);
-throw error;
-}
 }
 
-async function deletePost(postId) {
-try {
-if (!firebaseInitialized || !db || !currentUser) {
-throw new Error('You must be signed in as admin to delete posts');
-}
-await db.collection('blogPosts').doc(postId).delete();
-console.log('✅ Post deleted with ID:', postId);
+async function deletePost(id) {
+if (!db || !currentUser) throw new Error('Not authenticated');
+await db.collection('blogPosts').doc(id).delete();
 return true;
-} catch (error) {
-console.error('❌ Error deleting post:', error);
-throw error;
-}
 }
 
 postForm.addEventListener('submit', async (e) => {
 e.preventDefault();
-if (!currentUser) {
-showAdminLoginModal();
-return;
-}
-const postId = postIdInput.value.trim();
+if (!currentUser) return new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+const id = postIdInput.value.trim();
 const title = document.getElementById('postTitle').value.trim();
 const content = document.getElementById('postContent').value.trim();
-const featuredImage = document.getElementById('featuredImage').value.trim();
-const imageUrl = document.getElementById('postImage').value.trim();
-const videoId = document.getElementById('postVideo').value.trim();
-const tagsInput = document.getElementById('postTags').value.trim();
-const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
-if (!title || !content) {
-showFormAlert('Title and content are required!', 'error');
-return;
-}
-const originalBtnText = submitPostBtn.innerHTML;
+if (!title || !content) return showFormAlert('Title & content required', 'error');
+const original = submitPostBtn.innerHTML;
 submitPostBtn.disabled = true;
-submitPostBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
-const postData = {
-title,
-content,
-featuredImage: featuredImage || null,
-imageUrl: imageUrl || null,
-videoId: videoId || null,
-tags
-};
+submitPostBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 try {
-const success = await savePost(postData, postId ? postId : null);
-if (success) {
+await savePost({
+title, content,
+featuredImage: document.getElementById('featuredImage').value.trim() || null,
+imageUrl: document.getElementById('postImage').value.trim() || null,
+videoId: document.getElementById('postVideo').value.trim() || null,
+tags: document.getElementById('postTags').value.trim().split(',').map(t=>t.trim()).filter(Boolean)
+}, id || null);
 postForm.reset();
 postIdInput.value = '';
 clearQuillEditor();
-const modal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
-if (modal) modal.hide();
+bootstrap.Modal.getInstance(document.getElementById('postModal'))?.hide();
 postModalLabel.textContent = 'Create New Post';
-submitPostBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Publish Post';
-showFormAlert(postId ? 'Post updated successfully!' : 'Post published successfully!', 'success');
-setTimeout(() => {
-currentArchiveFilter = null;
-currentFilterBadge.style.display = 'none';
-closeSinglePost();
-loadBlogPosts();
-}, 500);
-}
-} catch (error) {
-showFormAlert(`Failed to save: ${error.message}`, 'error');
-} finally {
-submitPostBtn.disabled = false;
-submitPostBtn.innerHTML = originalBtnText;
-}
+submitPostBtn.innerHTML = 'Publish Post';
+showFormAlert(id ? 'Updated' : 'Published', 'success');
+setTimeout(() => { currentArchiveFilter = null; currentFilterBadge.style.display = 'none'; closeSinglePost(); loadBlogPosts(); }, 400);
+} catch (err) { showFormAlert('Error: ' + err.message, 'error'); }
+finally { submitPostBtn.disabled = false; submitPostBtn.innerHTML = original; }
 });
 
-function openDeleteConfirm(postId) {
-if (!currentUser) {
-showAdminLoginModal();
-return;
-}
-currentPostId = postId;
+function openDeleteConfirm(id) {
+if (!currentUser) return new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+currentPostId = id;
 new bootstrap.Modal(deleteConfirmModal).show();
 }
 
 confirmDeleteBtn.addEventListener('click', async () => {
 if (!currentPostId || !currentUser) return;
-const originalBtnText = confirmDeleteBtn.innerHTML;
+const original = confirmDeleteBtn.innerHTML;
 confirmDeleteBtn.disabled = true;
-confirmDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Deleting...';
+confirmDeleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 try {
-const success = await deletePost(currentPostId);
-if (success) {
-bootstrap.Modal.getInstance(deleteConfirmModal).hide();
-showBlogAlert('Post deleted successfully!', 'success');
+await deletePost(currentPostId);
+bootstrap.Modal.getInstance(deleteConfirmModal)?.hide();
+showBlogAlert('Deleted', 'success');
 currentArchiveFilter = null;
 currentFilterBadge.style.display = 'none';
 closeSinglePost();
 loadBlogPosts();
-}
-} catch (error) {
-showBlogAlert('Failed to delete post: ' + error.message, 'error');
-} finally {
-confirmDeleteBtn.disabled = false;
-confirmDeleteBtn.innerHTML = originalBtnText;
-currentPostId = null;
-}
+} catch (err) { showBlogAlert('Error: ' + err.message, 'error'); }
+finally { confirmDeleteBtn.disabled = false; confirmDeleteBtn.innerHTML = original; currentPostId = null; }
 });
 
-function showAdminLoginModal() {
-new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
-}
-
 createPostBtn.addEventListener('click', () => {
-if (!currentUser) {
-showAdminLoginModal();
-return;
-}
-if (!firebaseInitialized) {
-alert('Firebase is not initialized. Please check the console for errors.');
-return;
-}
+if (!currentUser) return new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+if (!firebaseInitialized) return alert('Firebase not ready');
 postForm.reset();
 postIdInput.value = '';
 clearQuillEditor();
 postModalLabel.textContent = 'Create New Post';
-submitPostBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Publish Post';
+submitPostBtn.innerHTML = 'Publish Post';
 new bootstrap.Modal(document.getElementById('postModal')).show();
 });
 
 adminLoginForm.addEventListener('submit', async (e) => {
 e.preventDefault();
 const email = document.getElementById('adminEmail').value.trim();
-const password = document.getElementById('adminPassword').value.trim();
-if (!email || !password) {
-showFormAlert('Please enter both email and password', 'error', loginAlertContainer);
-return;
-}
-const originalBtnText = submitAdminLoginBtn.innerHTML;
+const pass = document.getElementById('adminPassword').value.trim();
+if (!email || !pass) return showFormAlert('Enter email & password', 'error', loginAlertContainer);
+const original = submitAdminLoginBtn.innerHTML;
 submitAdminLoginBtn.disabled = true;
-submitAdminLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Signing in...';
+submitAdminLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 try {
-await signInAdmin(email, password);
-showFormAlert('Signed in successfully!', 'success', loginAlertContainer);
+await signInAdmin(email, pass);
+showFormAlert('Signed in', 'success', loginAlertContainer);
 adminLoginForm.reset();
-} catch (error) {
-showFormAlert('Sign in failed: ' + error.message, 'error', loginAlertContainer);
-} finally {
-submitAdminLoginBtn.disabled = false;
-submitAdminLoginBtn.innerHTML = originalBtnText;
-}
+} catch (err) { showFormAlert('Error: ' + err.message, 'error', loginAlertContainer); }
+finally { submitAdminLoginBtn.disabled = false; submitAdminLoginBtn.innerHTML = original; }
 });
 
-// === SEARCH FUNCTIONALITY (WITH TAGS) ===
+// === SEARCH ===
 if (searchInput) {
 searchInput.addEventListener('input', (e) => {
 const term = e.target.value.toLowerCase();
 const cards = document.querySelectorAll('.blog-card');
-let hasResults = false;
-const existingMsg = document.getElementById('searchNoResults');
-if (existingMsg) existingMsg.remove();
-cards.forEach(card => {
-const title = card.querySelector('.blog-title') ? card.querySelector('.blog-title').textContent.toLowerCase() : '';
-const content = card.querySelector('.blog-content') ? card.querySelector('.blog-content').textContent.toLowerCase() : '';
-const tagBadges = card.querySelectorAll('.blog-tags .badge');
-let tagsText = '';
-tagBadges.forEach(badge => {
-tagsText += badge.textContent.toLowerCase() + ' ';
+let found = false;
+cards.forEach(c => {
+const title = c.querySelector('.blog-title')?.textContent.toLowerCase() || '';
+const content = c.querySelector('.blog-content')?.textContent.toLowerCase() || '';
+const tags = [...c.querySelectorAll('.blog-tags .badge')].map(b=>b.textContent.toLowerCase()).join(' ');
+const show = title.includes(term) || content.includes(term) || tags.includes(term);
+c.style.display = show ? 'block' : 'none';
+if (show) found = true;
 });
-if (title.includes(term) || content.includes(term) || tagsText.includes(term)) {
-card.style.display = 'block';
-hasResults = true;
-} else {
-card.style.display = 'none';
-}
-});
-if (!hasResults && cards.length > 0) {
-const noResultsMsg = document.createElement('div');
-noResultsMsg.id = 'searchNoResults';
-noResultsMsg.className = 'no-posts';
-noResultsMsg.innerHTML = '<i class="fas fa-search"></i><h3>No posts found</h3><p>Try a different search term or tag</p>';
-blogListView.appendChild(noResultsMsg);
+const existing = document.getElementById('searchNoResults');
+if (existing) existing.remove();
+if (!found && cards.length) {
+const msg = document.createElement('div');
+msg.id = 'searchNoResults';
+msg.className = 'no-posts';
+msg.innerHTML = '<i class="fas fa-search"></i><h3>No results</h3><p>Try different keywords</p>';
+blogListView.appendChild(msg);
 }
 });
 }
 
+// === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
 initializeFirebase();
 initializeQuillEditor();
 });
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-anchor.addEventListener('click', function(e) {
-if (this.getAttribute('href') === '#') {
-e.preventDefault();
-window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+a.addEventListener('click', function(e) {
+if (this.href === location.href.split('#')[0] + '#') { e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); }
 });
 });
 </script>
